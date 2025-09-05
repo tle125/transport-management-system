@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หน้าหลัก - ระบบขนส่ง</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&family=Spline+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#38e07b',
+                            600: '#22c55e',
+                            700: '#16a34a',
+                            800: '#15803d',
+                            900: '#14532d'
+                        },
+                        neutral: {
+                            50: '#ffffff',
+                            500: '#9eb7a8',
+                            700: '#29382f',
+                            800: '#1c2620',
+                            900: '#111714'
+                        }
+                    },
+                    fontFamily: {
+                        'thai': ['Noto Sans Thai', 'sans-serif'],
+                        'spline': ['Spline Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+        body {
+            font-family: 'Noto Sans Thai', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-neutral-900 font-thai text-neutral-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="px-4 py-3 flex items-center justify-between">
+            <h1 class="text-xl font-semibold text-neutral-50">หน้าหลัก</h1>
+            <div class="relative">
+                <button id="notificationBtn" class="p-2 text-neutral-500 hover:text-neutral-50 relative">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span id="notificationBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="px-4 py-6 pb-20">
+        <!-- สรุปภาพรวม -->
+        <section class="mb-6">
+            <h2 class="text-lg font-semibold text-neutral-50 mb-4">สรุปภาพรวม</h2>
+            <div class="grid grid-cols-3 gap-4">
+                <!-- กำลังดำเนินการ -->
+                <div class="bg-neutral-800 rounded-lg p-4 shadow-sm border border-neutral-700">
+                    <div class="text-center">
+                        <div id="inProgressCount" class="text-2xl font-bold text-blue-600">0</div>
+                        <div class="text-sm text-neutral-500 mt-1">กำลังดำเนินการ</div>
+                    </div>
+                </div>
+                
+                <!-- เสร็จสิ้น -->
+                <div class="bg-neutral-800 rounded-lg p-4 shadow-sm border border-neutral-700">
+                    <div class="text-center">
+                        <div id="completedCount" class="text-2xl font-bold text-green-600">0</div>
+                        <div class="text-sm text-neutral-500 mt-1">เสร็จสิ้น</div>
+                    </div>
+                </div>
+                
+                <!-- การแจ้งเตือน -->
+                <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                    <div class="text-center">
+                        <div id="notificationCount" class="text-2xl font-bold text-orange-600">0</div>
+                        <div class="text-sm text-neutral-500 mt-1">การแจ้งเตือน</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- การขนส่งล่าสุด -->
+        <section>
+            <h2 class="text-lg font-semibold text-neutral-50 mb-4">การขนส่งล่าสุด</h2>
+            <div id="recentTransports" class="space-y-3">
+                <!-- รายการขนส่งจะถูกโหลดที่นี่ -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-neutral-800 border-t border-neutral-700 px-4 py-2">
+        <div class="flex justify-around">
+            <a href="index.html" class="flex flex-col items-center py-2 text-primary-600">
+                <span class="material-symbols-outlined text-2xl">home</span>
+                <span class="text-xs mt-1">หน้าหลัก</span>
+            </a>
+            <a href="new-transport.html" class="flex flex-col items-center py-2 text-neutral-500 hover:text-primary-600">
+                <span class="material-symbols-outlined text-2xl">add_circle</span>
+                <span class="text-xs mt-1">บันทึกใหม่</span>
+            </a>
+            <a href="transport-history.html" class="flex flex-col items-center py-2 text-neutral-500 hover:text-primary-600">
+                <span class="material-symbols-outlined text-2xl">history</span>
+                <span class="text-xs mt-1">ประวัติ</span>
+            </a>
+            <a href="settings.html" class="flex flex-col items-center py-2 text-neutral-500 hover:text-primary-600">
+                <span class="material-symbols-outlined text-2xl">settings</span>
+                <span class="text-xs mt-1">ตั้งค่า</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Notification Modal -->
+    <div id="notificationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-lg max-h-96 overflow-y-auto">
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold">การแจ้งเตือน</h3>
+                    <button id="closeNotificationModal" class="text-gray-500 hover:text-gray-700">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            </div>
+            <div id="notificationList" class="p-4">
+                <!-- รายการแจ้งเตือนจะถูกโหลดที่นี่ -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { transportAPI, logout, checkPageAccess } from './api.js';
+        
+        // Make logout function global
+        window.logout = logout;
+        // ตรวจสอบการล็อกอิน
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (!currentUser) {
+            window.location.href = 'transfer.html';
+        }
+
+        // โหลดข้อมูลเมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', async function() {
+            await transportAPI.getUsers();
+            await loadDashboardData();
+            setupEventListeners();
+        });
+
+        // โหลดข้อมูลสำหรับ Dashboard
+        async function loadDashboardData() {
+            try {
+                // โหลดสถิติ
+                const stats = transportAPI.getStatistics();
+                document.getElementById('inProgressCount').textContent = stats.inTransitTransports || 0;
+                document.getElementById('completedCount').textContent = stats.completedTransports || 0;
+                
+                // โหลดการแจ้งเตือน
+                const notifications = transportAPI.getUnreadNotifications(currentUser.id);
+                document.getElementById('notificationCount').textContent = notifications.length;
+                
+                // แสดง badge ถ้ามีการแจ้งเตือน
+                const badge = document.getElementById('notificationBadge');
+                if (notifications.length > 0) {
+                    badge.textContent = notifications.length;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+                
+                // โหลดการขนส่งล่าสุด
+                loadRecentTransports();
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // โหลดการขนส่งล่าสุด
+        function loadRecentTransports() {
+            const recentTransports = transportAPI.getRecentTransports(5) || [];
+            const container = document.getElementById('recentTransports');
+            
+            if (!Array.isArray(recentTransports) || recentTransports.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <span class="material-symbols-outlined text-4xl mb-2 block">inbox</span>
+                        <p>ยังไม่มีการขนส่ง</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = recentTransports.map(transport => {
+                const origin = transportAPI.getWarehouseById(transport.originId);
+                const destination = transportAPI.getWarehouseById(transport.destinationId);
+                const statusText = getStatusText(transport.status);
+                const statusColor = getStatusColor(transport.status);
+                
+                return `
+                    <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-shadow" 
+                         onclick="viewTransportDetail('${transport.id}')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="text-sm font-medium text-gray-900">${transport.id}</span>
+                                    <span class="px-2 py-1 text-xs rounded-full ${statusColor}">${statusText}</span>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <div class="flex items-center space-x-1 mb-1">
+                                        <span class="material-symbols-outlined text-sm">location_on</span>
+                                        <span>${origin?.name || 'ไม่ระบุ'}</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="material-symbols-outlined text-sm">flag</span>
+                                        <span>${destination?.name || 'ไม่ระบุ'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ฟังก์ชันสำหรับแสดงสถานะ
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'รอดำเนินการ',
+                'in_transit': 'กำลังขนส่ง',
+                'completed': 'เสร็จสิ้น',
+                'cancelled': 'ยกเลิก'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getStatusColor(status) {
+            const colorMap = {
+                'pending': 'bg-yellow-100 text-yellow-800',
+                'in_transit': 'bg-blue-100 text-blue-800',
+                'completed': 'bg-green-100 text-green-800',
+                'cancelled': 'bg-red-100 text-red-800'
+            };
+            return colorMap[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        // ดูรายละเอียดการขนส่ง
+        function viewTransportDetail(transportId) {
+            localStorage.setItem('selectedTransportId', transportId);
+            window.location.href = 'transport-detail.html';
+        }
+
+        // ตั้งค่า Event Listeners
+        function setupEventListeners() {
+            // ปุ่มการแจ้งเตือน
+            const notificationBtn = document.getElementById('notificationBtn');
+            const closeNotificationModal = document.getElementById('closeNotificationModal');
+            const notificationModal = document.getElementById('notificationModal');
+            
+            if (notificationBtn) {
+                notificationBtn.addEventListener('click', showNotifications);
+            }
+            
+            if (closeNotificationModal) {
+                closeNotificationModal.addEventListener('click', hideNotifications);
+            }
+            
+            // ปิด modal เมื่อคลิกพื้นหลัง
+            if (notificationModal) {
+                 notificationModal.addEventListener('click', function(e) {
+                     if (e.target === this) {
+                         hideNotifications();
+                     }
+                 });
+             }
+        }
+
+        // แสดงการแจ้งเตือน
+        function showNotifications() {
+            const notifications = transportAPI.getNotifications(currentUser.id);
+            const container = document.getElementById('notificationList');
+            
+            if (notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <span class="material-symbols-outlined text-4xl mb-2 block">notifications_off</span>
+                        <p>ไม่มีการแจ้งเตือน</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = notifications.map(notification => `
+                    <div class="border-b border-gray-200 py-3 last:border-b-0 ${notification.isRead ? 'opacity-60' : ''}">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0">
+                                <span class="material-symbols-outlined text-blue-500">info</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-medium text-gray-900">${notification.title}</h4>
+                                <p class="text-sm text-gray-600 mt-1">${notification.message}</p>
+                                <p class="text-xs text-gray-400 mt-2">${formatDateTime(notification.createdAt)}</p>
+                            </div>
+                            ${!notification.isRead ? `
+                                <button onclick="markAsRead('${notification.id}')" class="text-blue-600 text-sm hover:text-blue-800">
+                                    ทำเครื่องหมายว่าอ่านแล้ว
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            document.getElementById('notificationModal').classList.remove('hidden');
+        }
+
+        // ซ่อนการแจ้งเตือน
+        function hideNotifications() {
+            document.getElementById('notificationModal').classList.add('hidden');
+        }
+
+        // ทำเครื่องหมายว่าอ่านแล้ว
+        function markAsRead(notificationId) {
+            transportAPI.markNotificationAsRead(notificationId);
+            loadDashboardData(); // รีเฟรชข้อมูล
+            showNotifications(); // รีเฟรชรายการแจ้งเตือน
+        }
+
+        // ฟอร์แมตวันที่และเวลา
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('th-TH') + ' ' + date.toLocaleTimeString('th-TH', { hour12: false });
+        }
+
+        // รีเฟรชข้อมูลทุก 30 วินาที
+        setInterval(loadDashboardData, 30000);
+    </script>
+</body>
+</html>

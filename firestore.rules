@@ -1,0 +1,182 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    function isManager() {
+      return isAuthenticated() && getUserRole() == 'manager';
+    }
+    
+    function isDriver() {
+      return isAuthenticated() && getUserRole() == 'driver';
+    }
+    
+    function isAdminOrManager() {
+      return isAdmin() || isManager();
+    }
+    
+    function isOwnerOrAdmin(userId) {
+      return isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+    
+    function isValidTransportData() {
+      return request.resource.data.keys().hasAll(['origin', 'destination', 'status']) &&
+             request.resource.data.status in ['pending', 'in_transit', 'completed', 'cancelled'];
+    }
+    
+    function isValidVehicleData() {
+      return request.resource.data.keys().hasAll(['plate', 'type', 'capacity', 'status']) &&
+             request.resource.data.status in ['available', 'in_use', 'maintenance'];
+    }
+    
+    function isValidUserData() {
+      return request.resource.data.keys().hasAll(['username', 'email', 'role']) &&
+             request.resource.data.role in ['admin', 'manager', 'driver'];
+    }
+    
+    // Users collection rules
+    match /users/{userId} {
+      // Admin can read/write all users
+      allow read, write: if isAdmin();
+      
+      // Manager can read all users but only update non-admin users
+      allow read: if isManager();
+      allow update: if isManager() && resource.data.role != 'admin' && isValidUserData();
+      
+      // Users can read their own data
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Users can update their own profile (except role)
+      allow update: if isAuthenticated() && 
+                       request.auth.uid == userId && 
+                       request.resource.data.role == resource.data.role;
+      
+      // Only admin can create new users
+      allow create: if isAdmin() && isValidUserData();
+      
+      // Only admin can delete users
+      allow delete: if isAdmin();
+    }
+    
+    // Vehicles collection rules
+    match /vehicles/{vehicleId} {
+      // Admin and Manager can read all vehicles
+      allow read: if isAdminOrManager();
+      
+      // Drivers can only read vehicles assigned to them
+      allow read: if isDriver() && 
+                     (resource.data.assignedDriverId == request.auth.uid || 
+                      !('assignedDriverId' in resource.data));
+      
+      // Only Admin and Manager can create/update/delete vehicles
+      allow create: if isAdminOrManager() && isValidVehicleData();
+      allow update: if isAdminOrManager() && isValidVehicleData();
+      allow delete: if isAdmin();
+      
+      // Drivers can update vehicle status (for maintenance reports)
+      allow update: if isDriver() && 
+                       resource.data.assignedDriverId == request.auth.uid &&
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt']) &&
+                       request.resource.data.status in ['available', 'maintenance'];
+    }
+    
+    // Transports collection rules
+    match /transports/{transportId} {
+      // Admin and Manager can read all transports
+      allow read: if isAdminOrManager();
+      
+      // Drivers can only read their assigned transports
+      allow read: if isDriver() && resource.data.driverId == request.auth.uid;
+      
+      // Admin and Manager can create/update/delete transports
+      allow create: if isAdminOrManager() && isValidTransportData();
+      allow update: if isAdminOrManager() && isValidTransportData();
+      allow delete: if isAdmin();
+      
+      // Drivers can update status and location of their assigned transports
+      allow update: if isDriver() && 
+                       resource.data.driverId == request.auth.uid &&
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'currentLocation', 'updatedAt']) &&
+                       request.resource.data.status in ['in_transit', 'completed'];
+    }
+    
+    // Notifications collection rules
+    match /notifications/{notificationId} {
+      // Users can read their own notifications
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      // Admin can read all notifications
+      allow read: if isAdmin();
+      
+      // Admin and Manager can create notifications
+      allow create: if isAdminOrManager();
+      
+      // Users can update their own notifications (mark as read)
+      allow update: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid &&
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'updatedAt']);
+      
+      // Admin can delete any notification
+      allow delete: if isAdmin();
+      
+      // Users can delete their own notifications
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Warehouses collection rules
+    match /warehouses/{warehouseId} {
+      // Admin and Manager can read/write warehouses
+      allow read, write: if isAdminOrManager();
+      
+      // Drivers can read warehouse information
+      allow read: if isDriver();
+    }
+    
+    // Settings collection rules
+    match /settings/{settingId} {
+      // Only Admin can read/write settings
+      allow read, write: if isAdmin();
+      
+      // Manager can read settings
+      allow read: if isManager();
+    }
+    
+    // Reports collection rules
+    match /reports/{reportId} {
+      // Admin and Manager can read/write reports
+      allow read, write: if isAdminOrManager();
+      
+      // Drivers can create reports
+      allow create: if isDriver();
+      
+      // Drivers can read their own reports
+      allow read: if isDriver() && resource.data.createdBy == request.auth.uid;
+    }
+    
+    // Audit logs collection rules
+    match /audit_logs/{logId} {
+      // Only Admin can read audit logs
+      allow read: if isAdmin();
+      
+      // System can create audit logs (server-side only)
+      allow create: if false; // This should be handled server-side
+    }
+    
+    // Default deny rule for any other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

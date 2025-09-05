@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ⚠️ TEMPORARY RULES FOR TESTING ONLY
+    // These rules allow read/write access to all documents
+    // DO NOT USE IN PRODUCTION!
+    
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+
+// 📝 INSTRUCTIONS:
+// 1. Copy this content to Firebase Console > Firestore Database > Rules
+// 2. Click "Publish" to apply the rules
+// 3. Test your application
+// 4. Replace with production rules from firestore.rules when ready
+//
+// ⚠️ WARNING: These rules are for testing only!
+// They allow anyone to read/write your database.
+// Use only during development and replace with secure rules before going live.

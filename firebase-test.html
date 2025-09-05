@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ทดสอบการเชื่อมต่อ Firebase</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .migration-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 ทดสอบการเชื่อมต่อ Firebase</h1>
+        
+        <div class="test-section">
+            <h3>1. การตรวจสอบการกำหนดค่า Firebase</h3>
+            <div id="config-status" class="status info">กำลังตรวจสอบ...</div>
+            <button onclick="testFirebaseConfig()">ทดสอบการกำหนดค่า</button>
+        </div>
+
+        <div class="test-section">
+            <h3>2. การเชื่อมต่อ Firestore</h3>
+            <div id="firestore-status" class="status info">ยังไม่ได้ทดสอบ</div>
+            <button onclick="testFirestoreConnection()">ทดสอบการเชื่อมต่อ Firestore</button>
+        </div>
+
+        <div class="test-section">
+            <h3>3. การย้ายข้อมูล (Data Migration)</h3>
+            <div id="migration-status" class="status info">พร้อมสำหรับการย้ายข้อมูล</div>
+            <div class="migration-controls">
+                <button onclick="runDataMigration()">เริ่มย้ายข้อมูล</button>
+                <button onclick="checkMigrationStatus()">ตรวจสอบสถานะ</button>
+                <button onclick="clearFirestoreData()" style="background-color: #dc3545;">ล้างข้อมูล Firestore</button>
+            </div>
+            <div id="migration-log" class="log" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. ทดสอบ API Functions</h3>
+            <div id="api-status" class="status info">ยังไม่ได้ทดสอบ</div>
+            <div class="migration-controls">
+                <button onclick="testGetUsers()">ทดสอบ getUsers()</button>
+                <button onclick="testGetTransports()">ทดสอบ getTransports()</button>
+                <button onclick="testAuthentication()">ทดสอบ Authentication</button>
+            </div>
+            <div id="api-log" class="log" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        import { FirebaseUtils } from './firebase-config.js';
+         import firebaseAPI from './firebase-api.js';
+         import { runMigration } from './migration.js';
+
+        // Global functions for testing
+        window.testFirebaseConfig = async function() {
+            const statusEl = document.getElementById('config-status');
+            try {
+                if (FirebaseUtils.isConfigured()) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✅ Firebase กำหนดค่าเรียบร้อยแล้ว (Project: wh1-transport)';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ Firebase ยังไม่ได้กำหนดค่าหรือกำหนดค่าไม่ถูกต้อง';
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = `❌ เกิดข้อผิดพลาด: ${error.message}`;
+            }
+        };
+
+        window.testFirestoreConnection = async function() {
+            const statusEl = document.getElementById('firestore-status');
+            statusEl.className = 'status info';
+            statusEl.textContent = 'กำลังทดสอบการเชื่อมต่อ Firestore...';
+            
+            try {
+                // Try to read from a test collection
+                const testCollection = collection(getFirestore(), 'test');
+                await getDocs(testCollection);
+                
+                statusEl.className = 'status success';
+                statusEl.textContent = '✅ เชื่อมต่อ Firestore สำเร็จ!';
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = `❌ ไม่สามารถเชื่อมต่อ Firestore: ${error.message}`;
+                console.error('Firestore connection error:', error);
+            }
+        };
+
+        window.runDataMigration = async function() {
+            const statusEl = document.getElementById('migration-status');
+            const logEl = document.getElementById('migration-log');
+            
+            statusEl.className = 'status info';
+            statusEl.textContent = 'กำลังย้ายข้อมูล...';
+            logEl.style.display = 'block';
+            logEl.textContent = 'เริ่มการย้ายข้อมูล...\n';
+            
+            try {
+                const result = await runMigration();
+                
+                if (result.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✅ ย้ายข้อมูลสำเร็จ!';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = `❌ การย้ายข้อมูลล้มเหลว: ${result.error}`;
+                }
+                
+                logEl.textContent = result.log.join('\n');
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = `❌ เกิดข้อผิดพลาดในการย้ายข้อมูล: ${error.message}`;
+                logEl.textContent += `\nError: ${error.message}`;
+                console.error('Migration error:', error);
+            }
+        };
+
+        window.checkMigrationStatus = async function() {
+            const statusEl = document.getElementById('migration-status');
+            const logEl = document.getElementById('migration-log');
+            
+            try {
+                const users = await firebaseAPI.getUsers();
+                const transports = await firebaseAPI.getTransports();
+                const vehicles = await firebaseAPI.getVehicles();
+                
+                statusEl.className = 'status info';
+                statusEl.textContent = `📊 ข้อมูลใน Firestore: ${users.length} users, ${transports.length} transports, ${vehicles.length} vehicles`;
+                
+                logEl.style.display = 'block';
+                logEl.textContent = `Users: ${users.length}\nTransports: ${transports.length}\nVehicles: ${vehicles.length}\n\nSample data:\n${JSON.stringify({users: users.slice(0,2), transports: transports.slice(0,2)}, null, 2)}`;
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = `❌ ไม่สามารถตรวจสอบข้อมูล: ${error.message}`;
+            }
+        };
+
+        window.clearFirestoreData = async function() {
+            if (!confirm('คุณแน่ใจหรือไม่ที่จะล้างข้อมูลทั้งหมดใน Firestore?')) {
+                return;
+            }
+            
+            const statusEl = document.getElementById('migration-status');
+            statusEl.className = 'status info';
+            statusEl.textContent = 'กำลังล้างข้อมูล...';
+            
+            try {
+                // This is a simplified version - in production you'd want batch deletes
+                const collections = ['users', 'transports', 'vehicles', 'notifications'];
+                
+                for (const collectionName of collections) {
+                    const snapshot = await getDocs(collection(getFirestore(), collectionName));
+                    const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+                    await Promise.all(deletePromises);
+                }
+                
+                statusEl.className = 'status success';
+                statusEl.textContent = '✅ ล้างข้อมูล Firestore เรียบร้อยแล้ว';
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = `❌ ไม่สามารถล้างข้อมูล: ${error.message}`;
+            }
+        };
+
+        window.testGetUsers = async function() {
+            const logEl = document.getElementById('api-log');
+            const statusEl = document.getElementById('api-status');
+            
+            logEl.style.display = 'block';
+            logEl.textContent = 'กำลังทดสอบ getUsers()...\n';
+            
+            try {
+                const users = await firebaseAPI.getUsers();
+                statusEl.className = 'status success';
+                statusEl.textContent = `✅ getUsers() ทำงานสำเร็จ - พบ ${users.length} users`;
+                logEl.textContent += `\nผลลัพธ์:\n${JSON.stringify(users, null, 2)}`;
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = `❌ getUsers() ล้มเหลว: ${error.message}`;
+                logEl.textContent += `\nError: ${error.message}`;
+            }
+        };
+
+        window.testGetTransports = async function() {
+            const logEl = document.getElementById('api-log');
+            const statusEl = document.getElementById('api-status');
+            
+            logEl.style.display = 'block';
+            logEl.textContent = 'กำลังทดสอบ getTransports()...\n';
+            
+            try {
+                const transports = await firebaseAPI.getTransports();
+                statusEl.className = 'status success';
+                statusEl.textContent = `✅ getTransports() ทำงานสำเร็จ - พบ ${transports.length} transports`;
+                logEl.textContent += `\nผลลัพธ์:\n${JSON.stringify(transports, null, 2)}`;
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = `❌ getTransports() ล้มเหลว: ${error.message}`;
+                logEl.textContent += `\nError: ${error.message}`;
+            }
+        };
+
+        window.testAuthentication = async function() {
+            const logEl = document.getElementById('api-log');
+            const statusEl = document.getElementById('api-status');
+            
+            logEl.style.display = 'block';
+            logEl.textContent = 'กำลังทดสอบ Authentication...\n';
+            
+            try {
+                const user = await firebaseAPI.authenticateUser('admin', 'admin123');
+                if (user) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = `✅ Authentication สำเร็จ - ผู้ใช้: ${user.username}`;
+                    logEl.textContent += `\nผู้ใช้ที่เข้าสู่ระบบ:\n${JSON.stringify(user, null, 2)}`;
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ Authentication ล้มเหลว - ไม่พบผู้ใช้';
+                    logEl.textContent += '\nไม่พบผู้ใช้ที่ตรงกัน';
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = `❌ Authentication ล้มเหลว: ${error.message}`;
+                logEl.textContent += `\nError: ${error.message}`;
+            }
+        };
+
+        // Auto-test configuration on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            testFirebaseConfig();
+        });
+    </script>
+</body>
+</html>

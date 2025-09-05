@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประวัติการขนส่ง - ระบบขนส่ง</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&family=Spline+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#38e07b',
+                            600: '#22c55e',
+                            700: '#16a34a',
+                            800: '#15803d',
+                            900: '#14532d'
+                        },
+                        neutral: {
+                            50: '#ffffff',
+                            500: '#9eb7a8',
+                            700: '#29382f',
+                            800: '#1c2620',
+                            900: '#111714'
+                        }
+                    },
+                    fontFamily: {
+                        'thai': ['Noto Sans Thai', 'sans-serif'],
+                        'spline': ['Spline Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+        body {
+            font-family: 'Noto Sans Thai', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-neutral-900 font-thai text-neutral-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center">
+                <button onclick="goBack()" class="mr-3 p-1 text-neutral-400 hover:text-neutral-50">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <h1 class="text-xl font-semibold text-neutral-50">รายการขนส่ง</h1>
+            </div>
+            <button id="searchBtn" class="p-2 text-neutral-400 hover:text-neutral-50">
+                <span class="material-symbols-outlined">search</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Search Bar -->
+    <div id="searchBar" class="bg-neutral-800 border-b border-neutral-700 px-4 py-3 hidden">
+        <div class="relative">
+            <input type="text" id="searchInput" placeholder="ค้นหาการขนส่ง..." class="w-full pl-10 pr-4 py-2 border border-neutral-600 bg-neutral-700 text-neutral-50 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 placeholder-neutral-400">
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 material-symbols-outlined text-gray-400">search</span>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="bg-neutral-800 border-b border-neutral-700 px-4 py-3">
+        <div class="flex space-x-2 overflow-x-auto">
+            <button onclick="filterByStatus('all')" class="filter-btn active px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-primary-600 text-white">
+                ทั้งหมด
+            </button>
+            <button onclick="filterByStatus('pending')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-neutral-700 text-neutral-300 hover:bg-neutral-600">
+                รอดำเนินการ
+            </button>
+            <button onclick="filterByStatus('in_transit')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-neutral-700 text-neutral-300 hover:bg-neutral-600">
+                กำลังขนส่ง
+            </button>
+            <button onclick="filterByStatus('completed')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-neutral-700 text-neutral-300 hover:bg-neutral-600">
+                เสร็จสิ้น
+            </button>
+            <button onclick="filterByStatus('cancelled')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-neutral-700 text-neutral-300 hover:bg-neutral-600">
+                ยกเลิก
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="px-4 py-4 pb-20">
+        <!-- Transport List -->
+        <div id="transportList" class="space-y-3">
+            <!-- รายการขนส่งจะถูกโหลดที่นี่ -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="text-center py-12 hidden">
+            <span class="material-symbols-outlined text-6xl text-gray-300 mb-4 block">inbox</span>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">ไม่พบการขนส่ง</h3>
+            <p class="text-gray-500 mb-6">ยังไม่มีการขนส่งในระบบ</p>
+            <a href="new-transport.html" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                <span class="material-symbols-outlined mr-2">add</span>
+                สร้างการขนส่งใหม่
+            </a>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-12 hidden">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p class="text-gray-500">กำลังโหลด...</p>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-neutral-800 border-t border-neutral-700 px-4 py-2">
+        <div class="flex justify-around">
+            <a href="index.html" class="flex flex-col items-center py-2 text-neutral-400 hover:text-primary-500">
+                <span class="material-symbols-outlined text-2xl">home</span>
+                <span class="text-xs mt-1">หน้าหลัก</span>
+            </a>
+            <a href="new-transport.html" class="flex flex-col items-center py-2 text-neutral-400 hover:text-primary-500">
+                <span class="material-symbols-outlined text-2xl">add_circle</span>
+                <span class="text-xs mt-1">บันทึกใหม่</span>
+            </a>
+            <a href="transport-history.html" class="flex flex-col items-center py-2 text-primary-500">
+                <span class="material-symbols-outlined text-2xl">history</span>
+                <span class="text-xs mt-1">ประวัติ</span>
+            </a>
+            <a href="settings.html" class="flex flex-col items-center py-2 text-neutral-400 hover:text-primary-500">
+                <span class="material-symbols-outlined text-2xl">settings</span>
+                <span class="text-xs mt-1">ตั้งค่า</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Action Sheet Modal -->
+    <div id="actionSheet" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-lg">
+            <div class="p-4 border-b border-gray-200">
+                <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+                <h3 id="actionSheetTitle" class="text-lg font-semibold text-center">การขนส่ง #</h3>
+            </div>
+            <div class="p-4 space-y-2">
+                <button onclick="viewTransportDetail()" class="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 rounded-lg">
+                    <span class="material-symbols-outlined mr-3 text-blue-600">visibility</span>
+                    <span>ดูรายละเอียด</span>
+                </button>
+                <button onclick="editTransport()" class="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 rounded-lg">
+                    <span class="material-symbols-outlined mr-3 text-green-600">edit</span>
+                    <span>แก้ไข</span>
+                </button>
+                <button onclick="updateStatus()" class="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 rounded-lg">
+                    <span class="material-symbols-outlined mr-3 text-orange-600">update</span>
+                    <span>อัพเดทสถานะ</span>
+                </button>
+                <button onclick="deleteTransport()" class="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 rounded-lg text-red-600">
+                    <span class="material-symbols-outlined mr-3">delete</span>
+                    <span>ลบ</span>
+                </button>
+            </div>
+            <div class="p-4 border-t border-gray-200">
+                <button onclick="closeActionSheet()" class="w-full py-3 text-center text-gray-600 hover:text-gray-800">
+                    ยกเลิก
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="statusModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 max-w-sm mx-4 w-full">
+            <h3 class="text-lg font-semibold mb-4">อัพเดทสถานะ</h3>
+            <div class="space-y-2 mb-6">
+                <label class="flex items-center">
+                    <input type="radio" name="status" value="pending" class="mr-3">
+                    <span>รอดำเนินการ</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="status" value="in_transit" class="mr-3">
+                    <span>กำลังขนส่ง</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="status" value="completed" class="mr-3">
+                    <span>เสร็จสิ้น</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="status" value="cancelled" class="mr-3">
+                    <span>ยกเลิก</span>
+                </label>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="closeStatusModal()" class="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    ยกเลิก
+                </button>
+                <button onclick="saveStatus()" class="flex-1 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                    บันทึก
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { transportAPI, getCurrentUser } from './api.js';
+        
+        // ตัวแปรสำหรับเก็บข้อมูล
+        let allTransports = [];
+        let filteredTransports = [];
+        let currentFilter = 'all';
+        let selectedTransportId = null;
+
+        // ตรวจสอบการล็อกอิน
+        const currentUser = getCurrentUser();
+        if (!currentUser) {
+            window.location.href = 'transfer.html';
+        }
+
+        // โหลดข้อมูลเมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', async function() {
+            await transportAPI.loadFromStorage();
+            await loadTransports();
+            setupEventListeners();
+        });
+
+        // โหลดข้อมูลการขนส่ง
+        async function loadTransports() {
+            try {
+                showLoading();
+                
+                // โหลดข้อมูลการขนส่งทั้งหมด
+                allTransports = transportAPI.getTransports();
+                
+                // เรียงลำดับตามวันที่สร้างล่าสุด
+                allTransports.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                // กรองข้อมูลตามฟิลเตอร์ปัจจุบัน
+                applyFilter();
+                
+                hideLoading();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error loading transports:', error);
+                showEmptyState();
+            }
+        }
+
+        // ใช้ฟิลเตอร์
+        function applyFilter() {
+            if (currentFilter === 'all') {
+                filteredTransports = [...allTransports];
+            } else {
+                filteredTransports = allTransports.filter(transport => transport.status === currentFilter);
+            }
+            
+            renderTransports();
+        }
+
+        // แสดงรายการขนส่ง
+        function renderTransports() {
+            const container = document.getElementById('transportList');
+            
+            if (filteredTransports.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            hideEmptyState();
+            
+            container.innerHTML = filteredTransports.map(transport => {
+                const origin = transportAPI.getWarehouseById(transport.originId);
+                const destination = transportAPI.getWarehouseById(transport.destinationId);
+                const statusText = getStatusText(transport.status);
+                const statusColor = getStatusColor(transport.status);
+                
+                return `
+                    <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-shadow" 
+                         onclick="showActionSheet('${transport.id}')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="text-sm font-medium text-gray-900">${transport.id}</span>
+                                    <span class="px-2 py-1 text-xs rounded-full ${statusColor}">${statusText}</span>
+                                </div>
+                                <div class="text-sm text-gray-600 space-y-1">
+                                    <div class="flex items-center space-x-1">
+                                        <span class="material-symbols-outlined text-sm text-green-600">location_on</span>
+                                        <span>${origin?.name || 'ไม่ระบุ'}</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="material-symbols-outlined text-sm text-red-600">flag</span>
+                                        <span>${destination?.name || 'ไม่ระบุ'}</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="material-symbols-outlined text-sm text-gray-400">schedule</span>
+                                        <span>${formatDate(transport.date)} ${transport.time}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ฟังก์ชันสำหรับแสดงสถานะ
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'รอดำเนินการ',
+                'in_transit': 'กำลังขนส่ง',
+                'completed': 'เสร็จสิ้น',
+                'cancelled': 'ยกเลิก'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getStatusColor(status) {
+            const colorMap = {
+                'pending': 'bg-yellow-100 text-yellow-800',
+                'in_transit': 'bg-blue-100 text-blue-800',
+                'completed': 'bg-green-100 text-green-800',
+                'cancelled': 'bg-red-100 text-red-800'
+            };
+            return colorMap[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        // ฟอร์แมตวันที่
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('th-TH');
+        }
+
+        // ตั้งค่า Event Listeners
+        function setupEventListeners() {
+            // ปุ่มค้นหา
+            document.getElementById('searchBtn').addEventListener('click', toggleSearch);
+            
+            // ช่องค้นหา
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            
+            // ปิด Action Sheet เมื่อคลิกพื้นหลัง
+            document.getElementById('actionSheet').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeActionSheet();
+                }
+            });
+            
+            // ปิด Status Modal เมื่อคลิกพื้นหลัง
+            document.getElementById('statusModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeStatusModal();
+                }
+            });
+        }
+
+        // สลับการแสดงช่องค้นหา
+        function toggleSearch() {
+            const searchBar = document.getElementById('searchBar');
+            const searchInput = document.getElementById('searchInput');
+            
+            if (searchBar.classList.contains('hidden')) {
+                searchBar.classList.remove('hidden');
+                searchInput.focus();
+            } else {
+                searchBar.classList.add('hidden');
+                searchInput.value = '';
+                handleSearch(); // รีเซ็ตการค้นหา
+            }
+        }
+
+        // จัดการการค้นหา
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            
+            if (query === '') {
+                applyFilter();
+                return;
+            }
+            
+            const searchResults = transportAPI.searchTransports(query);
+            
+            // กรองผลลัพธ์ตามฟิลเตอร์ปัจจุบัน
+            if (currentFilter === 'all') {
+                filteredTransports = searchResults;
+            } else {
+                filteredTransports = searchResults.filter(transport => transport.status === currentFilter);
+            }
+            
+            renderTransports();
+        }
+
+        // กรองตามสถานะ
+        function filterByStatus(status) {
+            currentFilter = status;
+            
+            // อัพเดท UI ปุ่มฟิลเตอร์
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-primary-600', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-700');
+            });
+            
+            event.target.classList.add('active', 'bg-primary-600', 'text-white');
+            event.target.classList.remove('bg-gray-100', 'text-gray-700');
+            
+            // ใช้ฟิลเตอร์
+            const query = document.getElementById('searchInput').value.trim();
+            if (query === '') {
+                applyFilter();
+            } else {
+                handleSearch();
+            }
+        }
+
+        // แสดง Action Sheet
+        function showActionSheet(transportId) {
+            selectedTransportId = transportId;
+            document.getElementById('actionSheetTitle').textContent = `การขนส่ง #${transportId}`;
+            document.getElementById('actionSheet').classList.remove('hidden');
+        }
+
+        // ปิด Action Sheet
+        function closeActionSheet() {
+            document.getElementById('actionSheet').classList.add('hidden');
+            selectedTransportId = null;
+        }
+
+        // ดูรายละเอียด
+        function viewTransportDetail() {
+            if (selectedTransportId) {
+                localStorage.setItem('selectedTransportId', selectedTransportId);
+                window.location.href = 'transport-detail.html';
+            }
+        }
+
+        // แก้ไข
+        function editTransport() {
+            if (selectedTransportId) {
+                localStorage.setItem('editTransportId', selectedTransportId);
+                window.location.href = 'edit-transport.html';
+            }
+        }
+
+        // อัพเดทสถานะ
+        function updateStatus() {
+            if (selectedTransportId) {
+                const transport = transportAPI.getTransportById(selectedTransportId);
+                if (transport) {
+                    // ตั้งค่าสถานะปัจจุบัน
+                    document.querySelector(`input[name="status"][value="${transport.status}"]`).checked = true;
+                    
+                    closeActionSheet();
+                    document.getElementById('statusModal').classList.remove('hidden');
+                }
+            }
+        }
+
+        // ปิด Status Modal
+        function closeStatusModal() {
+            document.getElementById('statusModal').classList.add('hidden');
+        }
+
+        // บันทึกสถานะ
+        function saveStatus() {
+            const selectedStatus = document.querySelector('input[name="status"]:checked')?.value;
+            
+            if (selectedStatus && selectedTransportId) {
+                const result = transportAPI.updateTransport(selectedTransportId, {
+                    status: selectedStatus
+                });
+                
+                if (result) {
+                    // สร้างการแจ้งเตือน
+                    transportAPI.addNotification({
+                        userId: currentUser.id,
+                        type: 'status_updated',
+                        title: 'อัพเดทสถานะ',
+                        message: `การขนส่ง #${selectedTransportId} ได้อัพเดทสถานะเป็น ${getStatusText(selectedStatus)}`,
+                        relatedId: selectedTransportId
+                    });
+                    
+                    closeStatusModal();
+                    loadTransports(); // รีโหลดข้อมูล
+                } else {
+                    alert('เกิดข้อผิดพลาดในการอัพเดทสถานะ');
+                }
+            }
+        }
+
+        // ลบการขนส่ง
+        function deleteTransport() {
+            if (selectedTransportId && confirm('คุณต้องการลบการขนส่งนี้หรือไม่?')) {
+                const result = transportAPI.deleteTransport(selectedTransportId);
+                
+                if (result) {
+                    closeActionSheet();
+                    loadTransports(); // รีโหลดข้อมูล
+                } else {
+                    alert('เกิดข้อผิดพลาดในการลบข้อมูล');
+                }
+            }
+        }
+
+        // แสดง Loading
+        function showLoading() {
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('transportList').classList.add('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+        }
+
+        // ซ่อน Loading
+        function hideLoading() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('transportList').classList.remove('hidden');
+        }
+
+        // แสดง Empty State
+        function showEmptyState() {
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('transportList').classList.add('hidden');
+        }
+
+        // ซ่อน Empty State
+        function hideEmptyState() {
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('transportList').classList.remove('hidden');
+        }
+
+        // ฟังก์ชันกลับ
+        function goBack() {
+            window.history.back();
+        }
+
+        // รีเฟรชข้อมูลทุก 30 วินาที
+        setInterval(loadTransports, 30000);
+    </script>
+</body>
+</html>

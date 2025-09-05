@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ระบบขนส่งสินค้า</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#38e07b',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d'
+                        },
+                        neutral: {
+                            50: '#fafafa',
+                            100: '#f5f5f5',
+                            200: '#e5e5e5',
+                            300: '#d4d4d4',
+                            400: '#a3a3a3',
+                            500: '#737373',
+                            600: '#525252',
+                            700: '#404040',
+                            800: '#262626',
+                            900: '#171717'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-neutral-900 text-neutral-50">
+    <!-- Header -->
+    <header class="bg-neutral-800 border-b border-neutral-700 px-4 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button onclick="history.back()" class="text-neutral-400 hover:text-neutral-50">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h1 class="text-xl font-semibold text-neutral-50">Admin Panel</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-neutral-400">ผู้ดูแลระบบ</span>
+                <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
+                    ออกจากระบบ
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="p-4 space-y-6">
+        <!-- Driver Assignment Section -->
+        <div class="bg-neutral-800 rounded-lg p-6">
+            <h2 class="text-lg font-semibold text-neutral-50 mb-4">จัดการการมอบหมายคนขับ</h2>
+            
+            <!-- Assignment Form -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">เลือกคนขับ</label>
+                    <select id="driverSelect" class="w-full bg-neutral-700 border border-neutral-600 text-neutral-50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="">-- เลือกคนขับ --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">เลือกรถ</label>
+                    <select id="vehicleSelect" class="w-full bg-neutral-700 border border-neutral-600 text-neutral-50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="">-- เลือกรถ --</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="assignDriver()" class="w-full bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg font-medium">
+                        มอบหมาย
+                    </button>
+                </div>
+            </div>
+
+            <!-- Current Assignments -->
+            <div>
+                <h3 class="text-md font-medium text-neutral-50 mb-3">การมอบหมายปัจจุบัน</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-neutral-700">
+                                <th class="text-left py-2 px-3 text-neutral-300">คนขับ</th>
+                                <th class="text-left py-2 px-3 text-neutral-300">รถ</th>
+                                <th class="text-left py-2 px-3 text-neutral-300">สถานะ</th>
+                                <th class="text-left py-2 px-3 text-neutral-300">วันที่มอบหมาย</th>
+                                <th class="text-left py-2 px-3 text-neutral-300">การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assignmentTable">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Driver Management Section -->
+        <div class="bg-neutral-800 rounded-lg p-6">
+            <h2 class="text-lg font-semibold text-neutral-50 mb-4">จัดการคนขับ</h2>
+            
+            <!-- Add Driver Form -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">ชื่อ-นามสกุล</label>
+                    <input type="text" id="driverName" class="w-full bg-neutral-700 border border-neutral-600 text-neutral-50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="เช่น นายสมชาย ใจดี">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">เบอร์โทร</label>
+                    <input type="tel" id="driverPhone" class="w-full bg-neutral-700 border border-neutral-600 text-neutral-50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="08X-XXX-XXXX">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">ใบขับขี่</label>
+                    <input type="text" id="driverLicense" class="w-full bg-neutral-700 border border-neutral-600 text-neutral-50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="เลขที่ใบขับขี่">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="addDriver()" class="w-full bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg font-medium">
+                        เพิ่มคนขับ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Drivers List -->
+            <div>
+                <h3 class="text-md font-medium text-neutral-50 mb-3">รายชื่อคนขับ</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-neutral-700">
+                                <th class="text-left py-2 px-3 text-neutral-300">ชื่อ-นามสกุล</th>
+                                <th class="text-left py-2 px-3 text-neutral-300">เบอร์โทร</th>
+                                <th class="text-left py-2 px-3 text-neutral-300">ใบขับขี่</th>
+                                <th class="text-left py-2 px-3 text-neutral-300">สถานะ</th>
+                                <th class="text-left py-2 px-3 text-neutral-300">การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="driversTable">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle Management Section -->
+        <div class="bg-neutral-800 rounded-lg p-6">
+            <h2 class="text-lg font-semibold text-neutral-50 mb-4">จัดการรถขนส่ง</h2>
+            
+            <!-- Add Vehicle Form -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">ทะเบียนรถ</label>
+                    <input type="text" id="vehicleId" class="w-full bg-neutral-700 border border-neutral-600 text-neutral-50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="เช่น กข-1234">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">ประเภทรถ</label>
+                    <select id="vehicleType" class="w-full bg-neutral-700 border border-neutral-600 text-neutral-50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="">-- เลือกประเภท --</option>
+                        <option value="Tailer">Tailer</option>
+                        <option value="Forklift">Forklift</option>
+                        <option value="SC">SC</option>
+                        <option value="EV">EV</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">น้ำหนักบรรทุก (ตัน)</label>
+                    <input type="number" id="vehicleCapacity" class="w-full bg-neutral-700 border border-neutral-600 text-neutral-50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="เช่น 10" step="0.5">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="addVehicle()" class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium">
+                        เพิ่มรถ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle Status Section -->
+        <div class="bg-neutral-800 rounded-lg p-6">
+            <h2 class="text-lg font-semibold text-neutral-50 mb-4">สถานะรถขนส่ง</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-neutral-700">
+                            <th class="text-left py-2 px-3 text-neutral-300">ทะเบียน</th>
+                            <th class="text-left py-2 px-3 text-neutral-300">ประเภท</th>
+                            <th class="text-left py-2 px-3 text-neutral-300">น้ำหนักบรรทุก</th>
+                            <th class="text-left py-2 px-3 text-neutral-300">คนขับปัจจุบัน</th>
+                            <th class="text-left py-2 px-3 text-neutral-300">สถานะ</th>
+                            <th class="text-left py-2 px-3 text-neutral-300">การจัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vehiclesTable">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-neutral-800 border-t border-neutral-700 px-4 py-2">
+        <div class="flex justify-around">
+            <a href="index.html" class="flex flex-col items-center py-2 text-neutral-400 hover:text-primary-500">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 7 4-4 4 4"></path>
+                </svg>
+                <span class="text-xs">หน้าหลัก</span>
+            </a>
+            <a href="transport-history.html" class="flex flex-col items-center py-2 text-neutral-400 hover:text-primary-500">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <span class="text-xs">ประวัติ</span>
+            </a>
+            <a href="admin-panel.html" class="flex flex-col items-center py-2 text-primary-500">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span class="text-xs">จัดการ</span>
+            </a>
+            <a href="settings.html" class="flex flex-col items-center py-2 text-neutral-400 hover:text-primary-500">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <span class="text-xs">โปรไฟล์</span>
+            </a>
+        </div>
+    </nav>
+
+    <script type="module">
+        import firebaseAPI from './firebase-api.js';
+        
+        let drivers = [];
+        let vehicles = [];
+        let assignments = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+        });
+
+        async function loadData() {
+            try {
+                // Load data from Firebase
+                const users = await firebaseAPI.getUsers();
+                const vehiclesData = await firebaseAPI.getVehicles();
+                const assignmentsData = await firebaseAPI.getAssignments();
+                
+                drivers = users.filter(user => user.role === 'driver');
+                vehicles = vehiclesData;
+                assignments = assignmentsData;
+                
+                populateDriverSelect();
+                populateVehicleSelect();
+                renderDriversTable();
+                renderVehiclesTable();
+                renderAssignmentsTable();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        function populateDriverSelect() {
+            const select = document.getElementById('driverSelect');
+            select.innerHTML = '<option value="">-- เลือกคนขับ --</option>';
+            drivers.forEach(driver => {
+                select.innerHTML += `<option value="${driver.id}">${driver.fullName}</option>`;
+            });
+        }
+
+        function populateVehicleSelect() {
+            const select = document.getElementById('vehicleSelect');
+            select.innerHTML = '<option value="">-- เลือกรถ --</option>';
+            vehicles.filter(v => v.status === 'available').forEach(vehicle => {
+                const plateNumber = vehicle.plateNumber || vehicle.licensePlate || `รถ ID: ${vehicle.id}`;
+                const displayText = vehicle.plateNumber || vehicle.licensePlate ? plateNumber : `ไม่มีทะเบียน (ID: ${vehicle.id})`;
+                select.innerHTML += `<option value="${vehicle.id}">${displayText}</option>`;
+            });
+        }
+
+        function renderDriversTable() {
+            const tbody = document.getElementById('driversTable');
+            tbody.innerHTML = '';
+            drivers.forEach(driver => {
+                const assignment = assignments.find(a => a.driverId === driver.id && a.status === 'active');
+                tbody.innerHTML += `
+                    <tr class="border-b border-neutral-700">
+                        <td class="py-2 px-3 text-neutral-50">${driver.fullName}</td>
+                        <td class="py-2 px-3 text-neutral-400">${driver.phone || 'ไม่ระบุ'}</td>
+                        <td class="py-2 px-3 text-neutral-400">${driver.license || 'ไม่ระบุ'}</td>
+                        <td class="py-2 px-3">
+                            <span class="px-2 py-1 rounded text-xs ${
+                                assignment ? 'bg-primary-500/20 text-primary-400' : 'bg-neutral-600 text-neutral-300'
+                            }">
+                                ${assignment ? 'กำลังขับ' : 'ว่าง'}
+                            </span>
+                        </td>
+                        <td class="py-2 px-3">
+                            <button onclick="editDriver('${driver.id}')" class="text-primary-400 hover:text-primary-300 text-sm mr-2">แก้ไข</button>
+                            <button onclick="deleteDriver('${driver.id}')" class="text-red-400 hover:text-red-300 text-sm">ลบ</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderVehiclesTable() {
+            const tbody = document.getElementById('vehiclesTable');
+            tbody.innerHTML = '';
+            vehicles.forEach(vehicle => {
+                const assignment = assignments.find(a => a.vehicleId === vehicle.id && a.status === 'active');
+                const driver = assignment ? drivers.find(d => d.id === assignment.driverId) : null;
+                const plateNumber = vehicle.plateNumber || vehicle.id || 'ไม่ระบุ';
+                const capacity = vehicle.capacity ? `${vehicle.capacity} ตัน` : 'ไม่ระบุ';
+                
+                // กำหนดประเภทรถตามทะเบียน
+                let vehicleType = 'ไม่ระบุ';
+                if (plateNumber.startsWith('TT')) {
+                    vehicleType = 'Tailer';
+                } else if (plateNumber.startsWith('FL')) {
+                    vehicleType = 'Forklift';
+                } else if (plateNumber.startsWith('SC')) {
+                    vehicleType = 'SC';
+                } else if (plateNumber.startsWith('EV')) {
+                    vehicleType = 'EV';
+                }
+                
+                tbody.innerHTML += `
+                    <tr class="border-b border-neutral-700">
+                        <td class="py-2 px-3 text-neutral-50">${plateNumber}</td>
+                        <td class="py-2 px-3 text-neutral-400">${vehicleType}</td>
+                        <td class="py-2 px-3 text-neutral-400">${capacity}</td>
+                        <td class="py-2 px-3 text-neutral-400">${driver ? driver.fullName : 'ไม่มี'}</td>
+                        <td class="py-2 px-3">
+                            <span class="px-2 py-1 rounded text-xs ${
+                                vehicle.status === 'available' ? 'bg-green-500/20 text-green-400' :
+                                vehicle.status === 'in_use' ? 'bg-yellow-500/20 text-yellow-400' :
+                                'bg-red-500/20 text-red-400'
+                            }">
+                                ${vehicle.status === 'available' ? 'ว่าง' :
+                                  vehicle.status === 'in_use' ? 'ใช้งาน' : 'ซ่อม'}
+                            </span>
+                        </td>
+                        <td class="py-2 px-3">
+                            <button onclick="editVehicle('${vehicle.id}')" class="text-primary-400 hover:text-primary-300 text-sm mr-2">แก้ไข</button>
+                            ${assignment ? `<button onclick="unassignVehicle('${vehicle.id}')" class="text-red-400 hover:text-red-300 text-sm">ยกเลิกมอบหมาย</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAssignmentsTable() {
+            const tbody = document.getElementById('assignmentTable');
+            tbody.innerHTML = '';
+            assignments.filter(a => a.status === 'active').forEach(assignment => {
+                const driver = drivers.find(d => d.id === assignment.driverId);
+                const vehicle = vehicles.find(v => v.id === assignment.vehicleId);
+                tbody.innerHTML += `
+                    <tr class="border-b border-neutral-700">
+                        <td class="py-2 px-3 text-neutral-50">${driver ? driver.fullName : 'ไม่พบข้อมูล'}</td>
+                        <td class="py-2 px-3 text-neutral-400">${vehicle ? (vehicle.plateNumber || vehicle.licensePlate || `ไม่มีทะเบียน (ID: ${vehicle.id})`) : 'ไม่พบข้อมูล'}</td>
+                        <td class="py-2 px-3">
+                            <span class="px-2 py-1 rounded text-xs bg-primary-500/20 text-primary-400">
+                                กำลังใช้งาน
+                            </span>
+                        </td>
+                        <td class="py-2 px-3 text-neutral-400">${new Date(assignment.assignedAt).toLocaleDateString('th-TH')}</td>
+                        <td class="py-2 px-3">
+                            <button onclick="unassignDriver('${assignment.id}')" class="text-red-400 hover:text-red-300 text-sm">ยกเลิก</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function assignDriver() {
+            const driverId = document.getElementById('driverSelect').value;
+            const vehicleId = document.getElementById('vehicleSelect').value;
+
+            if (!driverId || !vehicleId) {
+                alert('กรุณาเลือกคนขับและรถ');
+                return;
+            }
+
+            try {
+                // Check if driver or vehicle is already assigned
+                const activeAssignments = await firebaseAPI.getActiveAssignments();
+                const existingAssignment = activeAssignments.find(a => 
+                    (a.driverId === driverId || a.vehicleId === vehicleId) && a.status === 'active'
+                );
+
+                if (existingAssignment) {
+                    alert('คนขับหรือรถคันนี้ถูกมอบหมายแล้ว');
+                    return;
+                }
+
+                const newAssignment = {
+                    driverId: driverId,
+                    vehicleId: vehicleId,
+                    status: 'active',
+                    assignedAt: new Date().toISOString(),
+                    assignedBy: 'admin'
+                };
+
+                // Save to Firebase
+                const assignmentId = await firebaseAPI.addAssignment(newAssignment);
+                
+                // Update local assignments array
+                assignments.push({ id: assignmentId, ...newAssignment });
+                
+                // Update vehicle status
+                const vehicle = vehicles.find(v => v.id === vehicleId);
+                if (vehicle) {
+                    vehicle.status = 'in_use';
+                    vehicle.driver = drivers.find(d => d.id === driverId).fullName;
+                }
+
+                // Reset form
+                document.getElementById('driverSelect').value = '';
+                document.getElementById('vehicleSelect').value = '';
+
+                // Refresh displays
+                populateVehicleSelect();
+                renderDriversTable();
+                renderVehiclesTable();
+                renderAssignmentsTable();
+
+                alert('มอบหมายสำเร็จ');
+            } catch (error) {
+                console.error('Error assigning driver:', error);
+                alert('เกิดข้อผิดพลาดในการมอบหมาย');
+            }
+        }
+
+        async function addDriver() {
+            const name = document.getElementById('driverName').value;
+            const phone = document.getElementById('driverPhone').value;
+            const license = document.getElementById('driverLicense').value;
+
+            if (!name) {
+                alert('กรุณาใส่ชื่อ-นามสกุล');
+                return;
+            }
+
+            try {
+                const newDriver = {
+                    username: 'driver_' + Date.now(),
+                    password: 'driver123',
+                    role: 'driver',
+                    fullName: name,
+                    phone: phone,
+                    license: license,
+                    email: `driver_${Date.now()}@transport.com`
+                };
+
+                await firebaseAPI.addUser(newDriver);
+                
+                // Reload data to get updated drivers list
+                await loadData();
+
+                // Reset form
+                document.getElementById('driverName').value = '';
+                document.getElementById('driverPhone').value = '';
+                document.getElementById('driverLicense').value = '';
+
+                alert('เพิ่มคนขับสำเร็จ');
+            } catch (error) {
+                console.error('Error adding driver:', error);
+                alert('เกิดข้อผิดพลาดในการเพิ่มคนขับ');
+            }
+        }
+
+        async function addVehicle() {
+            const vehicleId = document.getElementById('vehicleId').value;
+            const vehicleType = document.getElementById('vehicleType').value;
+            const vehicleCapacity = document.getElementById('vehicleCapacity').value;
+
+            if (!vehicleId || !vehicleType) {
+                alert('กรุณาใส่ทะเบียนรถและเลือกประเภทรถ');
+                return;
+            }
+
+            // Check if vehicle ID already exists
+            const existingVehicle = vehicles.find(v => v.plateNumber === vehicleId || v.id === vehicleId);
+            if (existingVehicle) {
+                alert('ทะเบียนรถนี้มีอยู่ในระบบแล้ว');
+                return;
+            }
+
+            try {
+                const newVehicle = {
+                    plateNumber: vehicleId,
+                    type: vehicleType,
+                    capacity: vehicleCapacity ? parseFloat(vehicleCapacity) : null,
+                    status: 'available',
+                    assignedDriver: null,
+                    brand: '',
+                    model: '',
+                    year: null
+                };
+
+                await firebaseAPI.addVehicle(newVehicle);
+                
+                // Reload data to get updated vehicles list
+                await loadData();
+
+                // Reset form
+                document.getElementById('vehicleId').value = '';
+                document.getElementById('vehicleType').value = '';
+                document.getElementById('vehicleCapacity').value = '';
+
+                alert('เพิ่มรถสำเร็จ');
+            } catch (error) {
+                console.error('Error adding vehicle:', error);
+                alert('เกิดข้อผิดพลาดในการเพิ่มรถ');
+            }
+        }
+
+        function unassignDriver(assignmentId) {
+            if (confirm('ต้องการยกเลิกการมอบหมายนี้หรือไม่?')) {
+                const assignment = assignments.find(a => a.id === assignmentId);
+                if (assignment) {
+                    assignment.status = 'inactive';
+                    assignment.unassignedAt = new Date().toISOString();
+
+                    // Update vehicle status
+                    const vehicle = vehicles.find(v => v.id === assignment.vehicleId);
+                    if (vehicle) {
+                        vehicle.status = 'available';
+                        vehicle.driver = null;
+                    }
+
+                    // Refresh displays
+                    populateVehicleSelect();
+                    renderDriversTable();
+                    renderVehiclesTable();
+                    renderAssignmentsTable();
+
+                    alert('ยกเลิกการมอบหมายสำเร็จ');
+                }
+            }
+        }
+
+        function editDriver(driverId) {
+            alert('ฟีเจอร์แก้ไขข้อมูลคนขับจะพัฒนาในเวอร์ชันถัดไป');
+        }
+
+        function deleteDriver(driverId) {
+            if (confirm('ต้องการลบคนขับนี้หรือไม่?')) {
+                const index = drivers.findIndex(d => d.id === driverId);
+                if (index > -1) {
+                    drivers.splice(index, 1);
+                    populateDriverSelect();
+                    renderDriversTable();
+                    alert('ลบคนขับสำเร็จ');
+                }
+            }
+        }
+
+        function editVehicle(vehicleId) {
+            alert('ฟีเจอร์แก้ไขข้อมูลรถจะพัฒนาในเวอร์ชันถัดไป');
+        }
+
+        function unassignVehicle(vehicleId) {
+            const assignment = assignments.find(a => a.vehicleId === vehicleId && a.status === 'active');
+            if (assignment) {
+                unassignDriver(assignment.id);
+            }
+        }
+
+        function logout() {
+            if (confirm('ต้องการออกจากระบบหรือไม่?')) {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // Make functions global for onclick handlers
+        window.loadData = loadData;
+        window.assignDriver = assignDriver;
+        window.addDriver = addDriver;
+        window.addVehicle = addVehicle;
+        window.unassignDriver = unassignDriver;
+        window.editDriver = editDriver;
+        window.deleteDriver = deleteDriver;
+        window.editVehicle = editVehicle;
+        window.unassignVehicle = unassignVehicle;
+        window.logout = logout;
+    </script>
+</body>
+</html>

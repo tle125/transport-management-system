@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ระบบบันทึกการขนส่ง - Dashboard</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style type="text/tailwindcss">
+        :root {
+            --primary-color: #38e07b;
+            --secondary-color: #29382f;
+            --dark-bg: #111714;
+        }
+        body {
+            font-family: 'Noto Sans Thai', 'Spline Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-[#111714] text-white">
+    <!-- Header -->
+    <header class="bg-[#29382f] shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-[var(--primary-color)]">ระบบบันทึกการขนส่ง</h1>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-300">ยินดีต้อนรับ, ผู้ใช้</span>
+                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined">logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-[#1a2420] border-b border-gray-700">
+        <div class="container mx-auto px-4">
+            <div class="flex space-x-8">
+                <a href="dashboard.html" class="flex items-center px-4 py-3 text-[var(--primary-color)] border-b-2 border-[var(--primary-color)]">
+                    <span class="material-symbols-outlined mr-2">dashboard</span>
+                    หน้าหลัก
+                </a>
+                <a href="add-transport.html" class="flex items-center px-4 py-3 text-gray-300 hover:text-[var(--primary-color)] transition-colors">
+                    <span class="material-symbols-outlined mr-2">add_circle</span>
+                    เพิ่มการขนส่ง
+                </a>
+                <a href="transport-list.html" class="flex items-center px-4 py-3 text-gray-300 hover:text-[var(--primary-color)] transition-colors">
+                    <span class="material-symbols-outlined mr-2">list</span>
+                    รายการขนส่ง
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-[#29382f] rounded-lg p-6 border border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">การขนส่งวันนี้</p>
+                        <p class="text-3xl font-bold text-[var(--primary-color)]" id="todayCount">0</p>
+                    </div>
+                    <span class="material-symbols-outlined text-4xl text-[var(--primary-color)]">today</span>
+                </div>
+            </div>
+            
+            <div class="bg-[#29382f] rounded-lg p-6 border border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">การขนส่งทั้งหมด</p>
+                        <p class="text-3xl font-bold text-blue-400" id="totalCount">0</p>
+                    </div>
+                    <span class="material-symbols-outlined text-4xl text-blue-400">inventory</span>
+                </div>
+            </div>
+            
+            <div class="bg-[#29382f] rounded-lg p-6 border border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">กำลังขนส่ง</p>
+                        <p class="text-3xl font-bold text-yellow-400" id="inTransitCount">0</p>
+                    </div>
+                    <span class="material-symbols-outlined text-4xl text-yellow-400">local_shipping</span>
+                </div>
+            </div>
+            
+            <div class="bg-[#29382f] rounded-lg p-6 border border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">เสร็จสิ้น</p>
+                        <p class="text-3xl font-bold text-green-400" id="completedCount">0</p>
+                    </div>
+                    <span class="material-symbols-outlined text-4xl text-green-400">check_circle</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transports -->
+        <div class="bg-[#29382f] rounded-lg border border-gray-700">
+            <div class="p-6 border-b border-gray-700">
+                <h2 class="text-xl font-bold flex items-center">
+                    <span class="material-symbols-outlined mr-2">history</span>
+                    การขนส่งล่าสุด
+                </h2>
+            </div>
+            <div class="p-6">
+                <div id="recentTransports" class="space-y-4">
+                    <div class="text-center text-gray-400 py-8">
+                        <span class="material-symbols-outlined text-6xl mb-4 block">inbox</span>
+                        <p>ยังไม่มีข้อมูลการขนส่ง</p>
+                        <a href="add-transport.html" class="inline-block mt-4 bg-[var(--primary-color)] text-[#111714] px-6 py-2 rounded-lg font-medium hover:bg-opacity-90 transition-colors">
+                            เพิ่มการขนส่งแรก
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import firebaseAPI from './firebase-api.js';
+        // Removed real-time updates to prevent Firestore connection errors
+
+        // Load dashboard data when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadDashboardData();
+            // Real-time updates disabled - use page refresh for latest data
+            console.log('💡 รีเฟรชหน้าเพื่อดูข้อมูลล่าสุด');
+        });
+
+        async function loadDashboardData() {
+            try {
+                const transports = await firebaseAPI.getTransports();
+                updateDashboardStats(transports);
+                loadRecentTransports(transports);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+        
+        function updateDashboardStats(transports) {
+            const today = new Date().toDateString();
+            
+            // Calculate stats
+            const todayTransports = transports.filter(t => new Date(t.date || t.createdAt).toDateString() === today);
+            const inTransitTransports = transports.filter(t => t.status === 'กำลังขนส่ง' || t.status === 'in_transit');
+            const completedTransports = transports.filter(t => t.status === 'เสร็จสิ้น' || t.status === 'completed');
+            
+            // Update stats
+            document.getElementById('todayCount').textContent = todayTransports.length;
+            document.getElementById('totalCount').textContent = transports.length;
+            document.getElementById('inTransitCount').textContent = inTransitTransports.length;
+            document.getElementById('completedCount').textContent = completedTransports.length;
+        }
+
+        function loadRecentTransports(transports = []) {
+            const recentTransports = transports.slice(-5).reverse(); // Get last 5, newest first
+            const container = document.getElementById('recentTransports');
+            
+            if (recentTransports.length === 0) {
+                return; // Keep the empty state
+            }
+            
+            container.innerHTML = recentTransports.map(transport => `
+                <div class="bg-[#1a2420] rounded-lg p-4 border border-gray-600">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <h3 class="font-medium text-white">${transport.customerName || transport.cargo?.description || 'ไม่ระบุ'}</h3>
+                            <p class="text-sm text-gray-400">${transport.origin} → ${transport.destination}</p>
+                            <p class="text-xs text-gray-500 mt-1">${formatDate(transport.date || transport.startTime)}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                                (transport.status === 'เสร็จสิ้น' || transport.status === 'completed') ? 'bg-green-600 text-green-100' :
+                                (transport.status === 'กำลังขนส่ง' || transport.status === 'in_transit') ? 'bg-yellow-600 text-yellow-100' :
+                                'bg-gray-600 text-gray-100'
+                            }">
+                                ${transport.status}
+                            </span>
+                            <p class="text-sm font-medium text-[var(--primary-color)] mt-1">
+                                ฿${parseFloat(transport.cost || 0).toLocaleString()}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'ไม่ระบุ';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('th-TH');
+        }
+        
+        // Make functions global
+        window.loadRecentTransports = loadRecentTransports;
+        window.formatDate = formatDate;
+        
+        window.logout = function() {
+            if (confirm('คุณต้องการออกจากระบบหรือไม่?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

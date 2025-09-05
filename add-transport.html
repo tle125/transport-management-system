@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ระบบบันทึกการขนส่ง - เพิ่มการขนส่ง</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style type="text/tailwindcss">
+        :root {
+            --primary-color: #38e07b;
+            --secondary-color: #29382f;
+            --dark-bg: #111714;
+        }
+        body {
+            font-family: 'Noto Sans Thai', 'Spline Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-[#111714] text-white">
+    <!-- Header -->
+    <header class="bg-[#29382f] shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-[var(--primary-color)]">ระบบบันทึกการขนส่ง</h1>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-300">ยินดีต้อนรับ, ผู้ใช้</span>
+                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined">logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-[#1a2420] border-b border-gray-700">
+        <div class="container mx-auto px-4">
+            <div class="flex space-x-8">
+                <a href="dashboard.html" class="flex items-center px-4 py-3 text-gray-300 hover:text-[var(--primary-color)] transition-colors">
+                    <span class="material-symbols-outlined mr-2">dashboard</span>
+                    หน้าหลัก
+                </a>
+                <a href="add-transport.html" class="flex items-center px-4 py-3 text-[var(--primary-color)] border-b-2 border-[var(--primary-color)]">
+                    <span class="material-symbols-outlined mr-2">add_circle</span>
+                    เพิ่มการขนส่ง
+                </a>
+                <a href="transport-list.html" class="flex items-center px-4 py-3 text-gray-300 hover:text-[var(--primary-color)] transition-colors">
+                    <span class="material-symbols-outlined mr-2">list</span>
+                    รายการขนส่ง
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-[#29382f] rounded-lg border border-gray-700">
+                <div class="p-6 border-b border-gray-700">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        <span class="material-symbols-outlined mr-3 text-[var(--primary-color)]">add_circle</span>
+                        เพิ่มข้อมูลการขนส่ง
+                    </h2>
+                    <p class="text-gray-400 mt-2">กรอกข้อมูลการขนส่งใหม่</p>
+                </div>
+                
+                <form id="transportForm" class="p-6 space-y-6">
+                    <!-- Customer Information -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-medium text-[var(--primary-color)] flex items-center">
+                            <span class="material-symbols-outlined mr-2">person</span>
+                            ข้อมูลลูกค้า
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">ชื่อลูกค้า *</label>
+                                <input type="text" id="customerName" required 
+                                       class="w-full bg-[#1a2420] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">เบอร์โทรศัพท์</label>
+                                <input type="tel" id="customerPhone" 
+                                       class="w-full bg-[#1a2420] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transport Details -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-medium text-[var(--primary-color)] flex items-center">
+                            <span class="material-symbols-outlined mr-2">local_shipping</span>
+                            รายละเอียดการขนส่ง
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">จุดต้นทาง *</label>
+                                <input type="text" id="origin" required 
+                                       class="w-full bg-[#1a2420] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">จุดหมาย *</label>
+                                <input type="text" id="destination" required 
+                                       class="w-full bg-[#1a2420] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">วันที่ขนส่ง *</label>
+                                <input type="date" id="transportDate" required 
+                                       class="w-full bg-[#1a2420] border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">เวลา</label>
+                                <input type="time" id="transportTime" 
+                                       class="w-full bg-[#1a2420] border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">รายละเอียดสินค้า</label>
+                            <textarea id="itemDescription" rows="3" 
+                                      class="w-full bg-[#1a2420] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" 
+                                      placeholder="อธิบายสินค้าที่ต้องขนส่ง..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Cost and Status -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-medium text-[var(--primary-color)] flex items-center">
+                            <span class="material-symbols-outlined mr-2">payments</span>
+                            ค่าใช้จ่ายและสถานะ
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">ค่าขนส่ง (บาท) *</label>
+                                <input type="number" id="transportCost" required min="0" step="0.01" 
+                                       class="w-full bg-[#1a2420] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">สถานะ *</label>
+                                <select id="transportStatus" required 
+                                        class="w-full bg-[#1a2420] border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                                    <option value="">เลือกสถานะ</option>
+                                    <option value="รอดำเนินการ">รอดำเนินการ</option>
+                                    <option value="กำลังขนส่ง">กำลังขนส่ง</option>
+                                    <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+                                    <option value="ยกเลิก">ยกเลิก</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">หมายเหตุ</label>
+                        <textarea id="notes" rows="3" 
+                                  class="w-full bg-[#1a2420] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" 
+                                  placeholder="หมายเหตุเพิ่มเติม..."></textarea>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex space-x-4 pt-6">
+                        <button type="submit" 
+                                class="flex-1 bg-[var(--primary-color)] text-[#111714] py-3 px-6 rounded-lg font-medium hover:bg-opacity-90 transition-colors flex items-center justify-center">
+                            <span class="material-symbols-outlined mr-2">save</span>
+                            บันทึกข้อมูล
+                        </button>
+                        
+                        <button type="button" onclick="resetForm()" 
+                                class="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors flex items-center">
+                            <span class="material-symbols-outlined mr-2">refresh</span>
+                            ล้างข้อมูล
+                        </button>
+                        
+                        <a href="dashboard.html" 
+                           class="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors flex items-center">
+                            <span class="material-symbols-outlined mr-2">arrow_back</span>
+                            กลับ
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        // Set today's date as default
+        document.getElementById('transportDate').value = new Date().toISOString().split('T')[0];
+        
+        // Form submission
+        document.getElementById('transportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                id: Date.now().toString(),
+                customerName: document.getElementById('customerName').value,
+                customerPhone: document.getElementById('customerPhone').value,
+                origin: document.getElementById('origin').value,
+                destination: document.getElementById('destination').value,
+                date: document.getElementById('transportDate').value,
+                time: document.getElementById('transportTime').value,
+                itemDescription: document.getElementById('itemDescription').value,
+                cost: parseFloat(document.getElementById('transportCost').value),
+                status: document.getElementById('transportStatus').value,
+                notes: document.getElementById('notes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Validate required fields
+            if (!formData.customerName || !formData.origin || !formData.destination || 
+                !formData.date || !formData.cost || !formData.status) {
+                alert('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+                return;
+            }
+            
+            // Save transport data
+            saveTransport(formData);
+            
+            alert('บันทึกข้อมูลการขนส่งเรียบร้อยแล้ว!');
+            
+            // Redirect to transport list
+            window.location.href = 'transport-list.html';
+        });
+        
+        function resetForm() {
+            if (confirm('คุณต้องการล้างข้อมูลทั้งหมดหรือไม่?')) {
+                document.getElementById('transportForm').reset();
+                document.getElementById('transportDate').value = new Date().toISOString().split('T')[0];
+            }
+        }
+        
+        function logout() {
+            if (confirm('คุณต้องการออกจากระบบหรือไม่?')) {
+                window.location.href = 'transfer.html';
+            }
+        }
+    </script>
+</body>
+</html>

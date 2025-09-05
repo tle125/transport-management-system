@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกใหม่ - ระบบขนส่ง</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&family=Spline+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#38e07b',
+                            600: '#22c55e',
+                            700: '#16a34a',
+                            800: '#15803d',
+                            900: '#14532d'
+                        },
+                        neutral: {
+                            50: '#ffffff',
+                            500: '#9eb7a8',
+                            700: '#29382f',
+                            800: '#1c2620',
+                            900: '#111714'
+                        }
+                    },
+                    fontFamily: {
+                        'thai': ['Noto Sans Thai', 'sans-serif'],
+                        'spline': ['Spline Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+        body {
+            font-family: 'Noto Sans Thai', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-neutral-900 font-thai text-neutral-50">
+    <!-- Header -->
+    <header class="bg-neutral-800 shadow-sm border-b border-neutral-700">
+        <div class="px-4 py-3 flex items-center">
+            <button onclick="goBack()" class="mr-3 p-1 text-neutral-300 hover:text-neutral-50">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h1 class="text-xl font-semibold text-neutral-50">บันทึกใหม่</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="px-4 py-6 pb-32">
+        <form id="transportForm" class="space-y-6">
+            <!-- รายละเอียด -->
+            <section>
+                <h2 class="text-lg font-semibold text-neutral-50 mb-4">รายละเอียด</h2>
+                
+                <!-- รถขนส่ง -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">รถขนส่ง</label>
+                    <div class="relative">
+                        <select id="vehicleSelect" name="vehicleId" required class="w-full p-3 border border-neutral-600 rounded-lg bg-neutral-700 text-neutral-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <option value="">เลือกรถขนส่ง</option>
+                        </select>
+                        <span class="absolute right-3 top-1/2 transform -translate-y-1/2 material-symbols-outlined text-neutral-400 pointer-events-none">expand_more</span>
+                    </div>
+                </div>
+
+                <!-- ต้นทาง -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">ต้นทาง</label>
+                    <div class="relative">
+                        <select id="originSelect" name="originId" required class="w-full p-3 border border-neutral-600 rounded-lg bg-neutral-700 text-neutral-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <option value="">เลือกคลังสินค้าต้นทาง</option>
+                        </select>
+                        <span class="absolute right-3 top-1/2 transform -translate-y-1/2 material-symbols-outlined text-gray-400 pointer-events-none">expand_more</span>
+                    </div>
+                </div>
+
+                <!-- ปลายทาง -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">ปลายทาง</label>
+                    <div class="relative">
+                        <select id="destinationSelect" name="destinationId" required class="w-full p-3 border border-neutral-600 rounded-lg bg-neutral-700 text-neutral-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <option value="">เลือกคลังสินค้าปลายทาง</option>
+                        </select>
+                        <span class="absolute right-3 top-1/2 transform -translate-y-1/2 material-symbols-outlined text-gray-400 pointer-events-none">expand_more</span>
+                    </div>
+                </div>
+
+                <!-- วันที่และเวลา -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-300 mb-2">วันที่</label>
+                        <input type="date" id="dateInput" name="date" required class="w-full p-3 border border-neutral-600 rounded-lg bg-neutral-700 text-neutral-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-300 mb-2">เวลา</label>
+                        <input type="time" id="timeInput" name="time" required class="w-full p-3 border border-neutral-600 rounded-lg bg-neutral-700 text-neutral-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    </div>
+                </div>
+
+                <!-- คนขับ -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">คนขับ</label>
+                    <input type="text" id="driverInput" name="driver" required class="w-full p-3 border border-neutral-600 rounded-lg bg-neutral-700 text-neutral-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="ชื่อคนขับ">
+                </div>
+
+                <!-- รายละเอียดสินค้า -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">รายละเอียดสินค้า</label>
+                    <textarea id="cargoDescription" name="cargoDescription" rows="3" class="w-full p-3 border border-neutral-600 rounded-lg bg-neutral-700 text-neutral-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="อธิบายสินค้าที่ขนส่ง"></textarea>
+                </div>
+
+                <!-- น้ำหนักและมูลค่า -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-300 mb-2">น้ำหนัก</label>
+                        <input type="text" id="cargoWeight" name="cargoWeight" class="w-full p-3 border border-neutral-600 rounded-lg bg-neutral-700 text-neutral-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="เช่น 5 ตัน">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-300 mb-2">มูลค่า (บาท)</label>
+                        <input type="number" id="cargoValue" name="cargoValue" class="w-full p-3 border border-neutral-600 rounded-lg bg-neutral-700 text-neutral-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- หมายเหตุ -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-neutral-300 mb-2">หมายเหตุ</label>
+                    <textarea id="notesInput" name="notes" rows="2" class="w-full p-3 border border-neutral-600 rounded-lg bg-neutral-700 text-neutral-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
+                </div>
+            </section>
+        </form>
+    </main>
+
+    <!-- Footer with Save Button -->
+    <footer class="fixed bottom-16 left-0 right-0 bg-neutral-800 border-t border-neutral-700 p-4">
+        <button type="submit" form="transportForm" id="saveBtn" class="w-full bg-primary-600 text-white py-3 rounded-lg font-medium hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span class="flex items-center justify-center">
+                <span class="material-symbols-outlined mr-2">save</span>
+                บันทึก
+            </span>
+        </button>
+    </footer>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-neutral-800 border-t border-neutral-700 px-4 py-2">
+        <div class="flex justify-around">
+            <a href="index.html" class="flex flex-col items-center py-2 text-neutral-400 hover:text-primary-600">
+                <span class="material-symbols-outlined text-2xl">home</span>
+                <span class="text-xs mt-1">หน้าหลัก</span>
+            </a>
+            <a href="new-transport.html" class="flex flex-col items-center py-2 text-primary-600">
+                <span class="material-symbols-outlined text-2xl">add_circle</span>
+                <span class="text-xs mt-1">บันทึกใหม่</span>
+            </a>
+            <a href="transport-history.html" class="flex flex-col items-center py-2 text-neutral-400 hover:text-primary-600">
+                <span class="material-symbols-outlined text-2xl">history</span>
+                <span class="text-xs mt-1">ประวัติ</span>
+            </a>
+            <a href="settings.html" class="flex flex-col items-center py-2 text-neutral-400 hover:text-primary-600">
+                <span class="material-symbols-outlined text-2xl">settings</span>
+                <span class="text-xs mt-1">ตั้งค่า</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 text-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p class="text-gray-700">กำลังบันทึก...</p>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 text-center max-w-sm mx-4">
+            <div class="text-green-600 mb-4">
+                <span class="material-symbols-outlined text-4xl">check_circle</span>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">บันทึกสำเร็จ</h3>
+            <p class="text-gray-600 mb-4">ข้อมูลการขนส่งได้ถูกบันทึกเรียบร้อยแล้ว</p>
+            <button onclick="closeSuccessModal()" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">
+                ตกลง
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { transportAPI, getCurrentUser } from './api.js';
+        
+        // ตรวจสอบการล็อกอิน
+        const currentUser = getCurrentUser();
+        if (!currentUser) {
+            window.location.href = 'transfer.html';
+        }
+
+        // โหลดข้อมูลเมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', async function() {
+            await transportAPI.loadFromStorage();
+            await loadFormData();
+            setupEventListeners();
+            setDefaultDateTime();
+        });
+
+        // โหลดข้อมูลสำหรับฟอร์ม
+        async function loadFormData() {
+            try {
+                // โหลดรถขนส่งที่ว่าง
+                const availableVehicles = transportAPI.getAvailableVehicles();
+                const vehicleSelect = document.getElementById('vehicleSelect');
+                
+                availableVehicles.forEach(vehicle => {
+                    const option = document.createElement('option');
+                    option.value = vehicle.id;
+                    option.textContent = `${vehicle.id} - ${vehicle.type} (${vehicle.capacity})`;
+                    vehicleSelect.appendChild(option);
+                });
+
+                // โหลดคลังสินค้า
+                const warehouses = transportAPI.getWarehouses();
+                const originSelect = document.getElementById('originSelect');
+                const destinationSelect = document.getElementById('destinationSelect');
+                
+                warehouses.forEach(warehouse => {
+                    const originOption = document.createElement('option');
+                    originOption.value = warehouse.id;
+                    originOption.textContent = `${warehouse.name} - ${warehouse.location}`;
+                    originSelect.appendChild(originOption);
+                    
+                    const destinationOption = document.createElement('option');
+                    destinationOption.value = warehouse.id;
+                    destinationOption.textContent = `${warehouse.name} - ${warehouse.location}`;
+                    destinationSelect.appendChild(destinationOption);
+                });
+                
+            } catch (error) {
+                console.error('Error loading form data:', error);
+                alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
+            }
+        }
+
+        // ตั้งค่าวันที่และเวลาเริ่มต้น
+        function setDefaultDateTime() {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            const currentTime = now.toTimeString().slice(0, 5);
+            
+            document.getElementById('dateInput').value = today;
+            document.getElementById('timeInput').value = currentTime;
+        }
+
+        // ตั้งค่า Event Listeners
+        function setupEventListeners() {
+            // เมื่อเลือกรถขนส่ง ให้ใส่ชื่อคนขับอัตโนมัติ
+            document.getElementById('vehicleSelect').addEventListener('change', function() {
+                const vehicleId = this.value;
+                if (vehicleId) {
+                    const vehicle = transportAPI.getVehicleById(vehicleId);
+                    if (vehicle && vehicle.driver) {
+                        document.getElementById('driverInput').value = vehicle.driver;
+                    }
+                }
+            });
+
+            // ป้องกันการเลือกต้นทางและปลายทางเดียวกัน
+            document.getElementById('originSelect').addEventListener('change', validateDestination);
+            document.getElementById('destinationSelect').addEventListener('change', validateOrigin);
+
+            // ฟอร์มส่งข้อมูล
+            document.getElementById('transportForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        // ตรวจสอบปลายทาง
+        function validateDestination() {
+            const originId = document.getElementById('originSelect').value;
+            const destinationId = document.getElementById('destinationSelect').value;
+            
+            if (originId && destinationId && originId === destinationId) {
+                alert('ต้นทางและปลายทางต้องไม่เหมือนกัน');
+                document.getElementById('destinationSelect').value = '';
+            }
+        }
+
+        // ตรวจสอบต้นทาง
+        function validateOrigin() {
+            const originId = document.getElementById('originSelect').value;
+            const destinationId = document.getElementById('destinationSelect').value;
+            
+            if (originId && destinationId && originId === destinationId) {
+                alert('ต้นทางและปลายทางต้องไม่เหมือนกัน');
+                document.getElementById('originSelect').value = '';
+            }
+        }
+
+        // จัดการการส่งฟอร์ม
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const transportData = {
+                vehicleId: formData.get('vehicleId'),
+                originId: formData.get('originId'),
+                destinationId: formData.get('destinationId'),
+                date: formData.get('date'),
+                time: formData.get('time'),
+                driver: formData.get('driver'),
+                cargo: {
+                    description: formData.get('cargoDescription') || '',
+                    weight: formData.get('cargoWeight') || '',
+                    value: parseFloat(formData.get('cargoValue')) || 0
+                },
+                notes: formData.get('notes') || '',
+                status: 'pending',
+                createdBy: currentUser.id
+            };
+
+            // ตรวจสอบข้อมูล
+            if (!transportData.vehicleId || !transportData.originId || !transportData.destinationId) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
+
+            if (transportData.originId === transportData.destinationId) {
+                alert('ต้นทางและปลายทางต้องไม่เหมือนกัน');
+                return;
+            }
+
+            try {
+                // แสดง loading
+                showLoading();
+                
+                // บันทึกข้อมูล
+                const result = transportAPI.addTransport(transportData);
+                
+                if (result) {
+                    // สร้างการแจ้งเตือน
+                    transportAPI.addNotification({
+                        userId: currentUser.id,
+                        type: 'transport_created',
+                        title: 'สร้างการขนส่งใหม่',
+                        message: `การขนส่ง #${result.id} ถูกสร้างเรียบร้อยแล้ว`,
+                        relatedId: result.id
+                    });
+                    
+                    hideLoading();
+                    showSuccess();
+                } else {
+                    throw new Error('ไม่สามารถบันทึกข้อมูลได้');
+                }
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error saving transport:', error);
+                alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + error.message);
+            }
+        }
+
+        // แสดง Loading
+        function showLoading() {
+            document.getElementById('loadingModal').classList.remove('hidden');
+            document.getElementById('saveBtn').disabled = true;
+        }
+
+        // ซ่อน Loading
+        function hideLoading() {
+            document.getElementById('loadingModal').classList.add('hidden');
+            document.getElementById('saveBtn').disabled = false;
+        }
+
+        // แสดงความสำเร็จ
+        function showSuccess() {
+            document.getElementById('successModal').classList.remove('hidden');
+        }
+
+        // ปิด Modal ความสำเร็จ
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            // รีเซ็ตฟอร์ม
+            document.getElementById('transportForm').reset();
+            setDefaultDateTime();
+            // กลับไปหน้าหลัก
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 500);
+        }
+
+        // ฟังก์ชันกลับ
+        window.goBack = function() {
+            if (confirm('คุณต้องการยกเลิกการบันทึกหรือไม่?')) {
+                window.history.back();
+            }
+        }
+        
+        // ทำให้ฟังก์ชันอื่นๆ เป็น global เพื่อให้ HTML เรียกใช้ได้
+        window.closeSuccessModal = closeSuccessModal;
+    </script>
+</body>
+</html>
