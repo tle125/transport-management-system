@@ -1,118 +1,245 @@
 <!DOCTYPE html>
-<html lang="th"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Logistics App - Login</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&amp;family=Spline+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<style type="text/tailwindcss">
-      :root {
-        --primary-color: #38e07b;
-      }
-      body {
-        font-family: 'Noto Sans Thai', 'Spline Sans', sans-serif;
-      }
-    </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-  </head>
-<body class="bg-[#111714]">
-<div class="relative flex size-full min-h-screen flex-col justify-center bg-[#111714] text-white overflow-x-hidden p-6">
-<div class="absolute top-0 left-0 w-full p-4 flex justify-center items-center">
-<h1 class="text-white text-xl font-bold">ระบบบันทึกการขนส่ง</h1>
-</div>
-<div class="flex flex-col items-center justify-center flex-grow">
-<div class="w-full max-w-sm space-y-8">
-<div class="text-center">
-<h2 class="text-4xl font-bold tracking-tight">ยินดีต้อนรับ</h2>
-<p class="mt-2 text-lg text-gray-400">เข้าสู่ระบบเพื่อดำเนินการต่อ</p>
-</div>
-<div class="space-y-6">
-<div class="relative">
-<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">person</span>
-<input class="form-input w-full rounded-full border-none bg-[#29382f] h-14 pl-12 pr-4 text-base placeholder:text-[#9eb7a8] focus:ring-2 focus:ring-[var(--primary-color)] transition-shadow" placeholder="ชื่อผู้ใช้" type="text"/>
-</div>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">lock</span>
-<input class="form-input w-full rounded-full border-none bg-[#29382f] h-14 pl-12 pr-4 text-base placeholder:text-[#9eb7a8] focus:ring-2 focus:ring-[var(--primary-color)] transition-shadow" placeholder="รหัสผ่าน" type="password"/>
-</div>
-</div>
-<div class="flex items-center justify-end">
-<a class="text-sm font-medium text-[var(--primary-color)] hover:underline" href="#">ลืมรหัสผ่าน?</a>
-</div>
-<button type="submit" class="w-full h-14 rounded-full bg-[var(--primary-color)] text-[#111714] text-lg font-bold tracking-wide hover:bg-opacity-90 transition-colors duration-300 transform hover:scale-105">
-                เข้าสู่ระบบ
-            </button>
-</div>
-</div>
-</div>
-
-<script src="app.js"></script>
-<script>
-    // Check if user is already logged in
-    if (isLoggedIn()) {
-        window.location.href = 'dashboard.html';
-    }
-    
-    // Handle form submission
-    const form = document.querySelector('form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.querySelector('input[type="text"]').value;
-            const password = document.querySelector('input[type="password"]').value;
-        
-        // Validate input
-        if (!username.trim()) {
-            alert('กรุณากรอกชื่อผู้ใช้');
-            return;
-        }
-        
-        if (!password.trim()) {
-            alert('กรุณากรอกรหัสผ่าน');
-            return;
-        }
-        
-        // Simple authentication (demo purposes)
-        // In real application, this would be server-side authentication
-        if (username.trim() && password.trim()) {
-            if (login(username, password)) {
-                // Show success message
-                const button = document.querySelector('button[type="submit"]');
-                button.textContent = 'กำลังเข้าสู่ระบบ...';
-                button.disabled = true;
-                
-                // Redirect after short delay
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1000);
-            } else {
-                alert('เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โอนย้ายข้อมูล - ระบบบันทึกการขนส่ง</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#38e07b',
+                        'dark-bg': '#111714',
+                        'card-bg': '#1a2420',
+                        'input-bg': '#29382f'
+                    },
+                    fontFamily: {
+                        'thai': ['Noto Sans Thai', 'Spline Sans', 'sans-serif']
+                    }
+                }
             }
-        } else {
-            alert('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
         }
-        });
-    }
-    
-    // Add demo credentials hint
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('.space-y-6');
-        const demoHint = document.createElement('div');
-        demoHint.className = 'text-center p-4 bg-[#1a2420] rounded-lg border border-gray-600';
-        demoHint.innerHTML = `
-            <p class="text-sm text-gray-300 mb-2">💡 <strong>สำหรับทดสอบระบบ:</strong></p>
-            <p class="text-xs text-gray-400">กรอกชื่อผู้ใช้และรหัสผ่านใดก็ได้เพื่อเข้าสู่ระบบ</p>
-        `;
-        form.appendChild(demoHint);
-    });
-</script>
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Noto Sans Thai', 'Spline Sans', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #111714 0%, #1a2420 100%);
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-white">
+    <!-- Header -->
+    <header class="bg-card-bg shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="history.back()" class="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </button>
+                    <h1 class="text-xl font-bold">โอนย้ายข้อมูล</h1>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="material-symbols-outlined text-primary">sync</span>
+                    <span class="text-sm text-gray-300">ระบบบันทึกการขนส่ง</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-</body></html>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Transfer Options -->
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <!-- Export Data -->
+                <div class="bg-card-bg rounded-xl p-6 border border-gray-700">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="p-3 bg-primary/20 rounded-lg">
+                            <span class="material-symbols-outlined text-primary">download</span>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold">ส่งออกข้อมูล</h2>
+                            <p class="text-sm text-gray-400">ดาวน์โหลดข้อมูลการขนส่ง</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <button class="w-full p-3 bg-input-bg hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                            <span>ส่งออกเป็น Excel</span>
+                            <span class="material-symbols-outlined">table_view</span>
+                        </button>
+                        <button class="w-full p-3 bg-input-bg hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                            <span>ส่งออกเป็น PDF</span>
+                            <span class="material-symbols-outlined">picture_as_pdf</span>
+                        </button>
+                        <button class="w-full p-3 bg-input-bg hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                            <span>ส่งออกเป็น JSON</span>
+                            <span class="material-symbols-outlined">code</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Import Data -->
+                <div class="bg-card-bg rounded-xl p-6 border border-gray-700">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="p-3 bg-primary/20 rounded-lg">
+                            <span class="material-symbols-outlined text-primary">upload</span>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold">นำเข้าข้อมูล</h2>
+                            <p class="text-sm text-gray-400">อัปโหลดข้อมูลการขนส่ง</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
+                            <span class="material-symbols-outlined text-4xl text-gray-400 mb-2 block">cloud_upload</span>
+                            <p class="text-sm text-gray-400">ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์</p>
+                            <p class="text-xs text-gray-500 mt-1">รองรับ: Excel, CSV, JSON</p>
+                            <input type="file" class="hidden" accept=".xlsx,.xls,.csv,.json">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backup & Restore -->
+            <div class="bg-card-bg rounded-xl p-6 border border-gray-700 mb-8">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="p-3 bg-primary/20 rounded-lg">
+                        <span class="material-symbols-outlined text-primary">backup</span>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold">สำรองและกู้คืนข้อมูล</h2>
+                        <p class="text-sm text-gray-400">จัดการข้อมูลสำรองของระบบ</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <button class="p-4 bg-input-bg hover:bg-gray-600 rounded-lg transition-colors text-center">
+                        <span class="material-symbols-outlined text-2xl text-primary block mb-2">save</span>
+                        <span class="text-sm font-medium">สร้างข้อมูลสำรอง</span>
+                    </button>
+                    <button class="p-4 bg-input-bg hover:bg-gray-600 rounded-lg transition-colors text-center">
+                        <span class="material-symbols-outlined text-2xl text-yellow-400 block mb-2">restore</span>
+                        <span class="text-sm font-medium">กู้คืนข้อมูล</span>
+                    </button>
+                    <button class="p-4 bg-input-bg hover:bg-gray-600 rounded-lg transition-colors text-center">
+                        <span class="material-symbols-outlined text-2xl text-blue-400 block mb-2">schedule</span>
+                        <span class="text-sm font-medium">สำรองอัตโนมัติ</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Transfers -->
+            <div class="bg-card-bg rounded-xl p-6 border border-gray-700">
+                <h2 class="text-lg font-semibold mb-4 flex items-center">
+                    <span class="material-symbols-outlined mr-2">history</span>
+                    ประวัติการโอนย้าย
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-input-bg rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <span class="material-symbols-outlined text-green-400">download_done</span>
+                            <div>
+                                <p class="font-medium">ส่งออกข้อมูลการขนส่ง</p>
+                                <p class="text-xs text-gray-400">2024-01-15 14:30</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-green-600 px-2 py-1 rounded">สำเร็จ</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-input-bg rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <span class="material-symbols-outlined text-blue-400">backup</span>
+                            <div>
+                                <p class="font-medium">สำรองข้อมูลอัตโนมัติ</p>
+                                <p class="text-xs text-gray-400">2024-01-15 12:00</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-green-600 px-2 py-1 rounded">สำเร็จ</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-input-bg rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <span class="material-symbols-outlined text-yellow-400">upload</span>
+                            <div>
+                                <p class="font-medium">นำเข้าข้อมูลจาก Excel</p>
+                                <p class="text-xs text-gray-400">2024-01-14 16:45</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-green-600 px-2 py-1 rounded">สำเร็จ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        // Check authentication
+        if (!isLoggedIn()) {
+            window.location.href = 'login.html';
+        }
+
+        // File upload handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.querySelector('.border-dashed');
+            const fileInput = uploadArea.querySelector('input[type="file"]');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('border-primary');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('border-primary');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('border-primary');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+        });
+
+        function handleFileUpload(file) {
+            console.log('Uploading file:', file.name);
+            // Add file upload logic here
+            alert(`กำลังอัปโหลดไฟล์: ${file.name}`);
+        }
+
+        // Export functions
+        document.querySelectorAll('button').forEach(button => {
+            if (button.textContent.includes('ส่งออก')) {
+                button.addEventListener('click', function() {
+                    const format = this.textContent.includes('Excel') ? 'excel' : 
+                                  this.textContent.includes('PDF') ? 'pdf' : 'json';
+                    exportData(format);
+                });
+            }
+        });
+
+        function exportData(format) {
+            console.log(`Exporting data as ${format}`);
+            alert(`กำลังส่งออกข้อมูลเป็น ${format.toUpperCase()}`);
+            // Add export logic here
+        }
+    </script>
+</body>
+</html>
