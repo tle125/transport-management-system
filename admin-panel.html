@@ -246,7 +246,7 @@
     </nav>
 
     <script type="module">
-        import firebaseAPI from './firebase-api.js';
+        // import firebaseAPI from './firebase-api.js'; // Disabled to prevent Firestore connection errors
         
         let drivers = [];
         let vehicles = [];
@@ -259,14 +259,15 @@
 
         async function loadData() {
             try {
-                // Load data from Firebase
-                const users = await firebaseAPI.getUsers();
-                const vehiclesData = await firebaseAPI.getVehicles();
-                const assignmentsData = await firebaseAPI.getAssignments();
+                // Firebase API disabled to prevent connection errors
+                // const users = await firebaseAPI.getUsers();
+                // const vehiclesData = await firebaseAPI.getVehicles();
+                // const assignmentsData = await firebaseAPI.getAssignments();
                 
-                drivers = users.filter(user => user.role === 'driver');
-                vehicles = vehiclesData;
-                assignments = assignmentsData;
+                drivers = []; // Use empty arrays instead
+                vehicles = [];
+                assignments = [];
+                console.log('⚠️ Firebase API ถูกปิดการใช้งาน - ใช้ข้อมูลจาก localStorage แทน');
                 
                 populateDriverSelect();
                 populateVehicleSelect();

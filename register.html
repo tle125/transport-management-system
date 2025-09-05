@@ -228,7 +228,7 @@
 
     <!-- Scripts -->
     <script type="module">
-        import firebaseAPI from './firebase-api.js';
+        // import firebaseAPI from './firebase-api.js'; // Disabled to prevent Firestore connection errors
         
         // ตรวจสอบว่าผู้ใช้ล็อกอินอยู่แล้วหรือไม่
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -238,7 +238,8 @@
 
         // โหลดข้อมูลเมื่อหน้าเว็บโหลดเสร็จ
         document.addEventListener('DOMContentLoaded', async function() {
-            await firebaseAPI.initializeData();
+            // await firebaseAPI.initializeData(); // Disabled to prevent Firestore connection errors
+            console.log('⚠️ Firebase API ถูกปิดการใช้งาน');
         });
 
         // จัดการการส่งฟอร์ม

@@ -124,7 +124,7 @@
     </main>
 
     <script type="module">
-        import firebaseAPI from './firebase-api.js';
+        // import firebaseAPI from './firebase-api.js'; // Disabled to prevent Firestore connection errors
         // Removed real-time updates to prevent Firestore connection errors
 
         // Load dashboard data when page loads
@@ -136,9 +136,12 @@
 
         async function loadDashboardData() {
             try {
-                const transports = await firebaseAPI.getTransports();
+                // Firebase API disabled to prevent connection errors
+                // const transports = await firebaseAPI.getTransports();
+                const transports = []; // Use empty array instead
                 updateDashboardStats(transports);
                 loadRecentTransports(transports);
+                console.log('⚠️ Firebase API ถูกปิดการใช้งาน - ใช้ข้อมูลจาก localStorage แทน');
             } catch (error) {
                 console.error('Error loading dashboard data:', error);
             }
