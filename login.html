@@ -126,22 +126,10 @@
                         </button>
                     </div>
 
-                    <!-- Error Message -->
-                    <div id="errorMessage" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                        <div class="flex items-center">
-                            <span class="material-symbols-outlined mr-2">error</span>
-                            <span id="errorText">เกิดข้อผิดพลาด</span>
-                        </div>
-                    </div>
-
                     <!-- Login Button -->
                     <button type="submit" id="loginBtn" 
                             class="w-full bg-primary-600 text-white py-3 rounded-lg font-medium hover:bg-primary-700 focus:ring-4 focus:ring-primary-300 transition-colors">
-                        <span id="loginBtnText">เข้าสู่ระบบ</span>
-                        <span id="loginBtnLoading" class="hidden">
-                            <span class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>
-                            กำลังเข้าสู่ระบบ...
-                        </span>
+                        เข้าสู่ระบบ
                     </button>
                 </form>
 
@@ -149,238 +137,51 @@
                 <div class="mt-6 text-center">
                     <p class="text-sm text-neutral-500">
                         ยังไม่มีบัญชี? 
-                        <button onclick="register()" class="text-primary-600 hover:text-primary-700 font-medium">
-                            สมัครสมาชิก
-                        </button>
+                        <a href="register.html" class="text-primary-600 hover:text-primary-700 font-medium">สมัครสมาชิก</a>
                     </p>
                 </div>
             </div>
         </div>
 
         <!-- Footer -->
-        <footer class="px-6 py-4 text-center text-xs text-neutral-500 bg-neutral-900">
-            <p>&copy; 2024 ระบบขนส่ง. สงวนลิขสิทธิ์.</p>
-        </footer>
+        <div class="bg-neutral-900 text-center py-4">
+            <p class="text-xs text-neutral-500">© 2024 ระบบขนส่ง. สงวนลิขสิทธิ์</p>
+        </div>
     </div>
 
-    <!-- Scripts -->
-    <script type="module">
-        import firebaseAPI from './firebase-api.js';
-        
-        // ตรวจสอบว่าผู้ใช้ล็อกอินอยู่แล้วหรือไม่
-        const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-        if (currentUser) {
-            window.location.href = 'index.html';
-        }
-
-        // โหลดข้อมูลเมื่อหน้าเว็บโหลดเสร็จ
-        document.addEventListener('DOMContentLoaded', async function() {
-            await firebaseAPI.initializeData();
-            
-            // ตรวจสอบ Remember Me
-            const rememberedUsername = localStorage.getItem('rememberedUsername');
-            if (rememberedUsername) {
-                document.getElementById('username').value = rememberedUsername;
-                document.getElementById('rememberMe').checked = true;
-            }
-        });
-
-        // จัดการการส่งฟอร์ม
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
-            
-            if (!username || !password) {
-                showError('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
-                return;
-            }
-            
-            showLoading(true);
-            hideError();
-            
-            try {
-                // โหลดข้อมูลและตรวจสอบการเข้าสู่ระบบ
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                const user = await firebaseAPI.authenticateUser(username, password);
-                
-                if (user) {
-                    // อัพเดทเวลาเข้าสู่ระบบล่าสุด
-                    user.lastLogin = new Date().toISOString();
-                    
-                    // บันทึกข้อมูลผู้ใช้
-                    localStorage.setItem('currentUser', JSON.stringify({
-                        id: user.id,
-                        username: user.username,
-                        fullName: user.name || user.fullName,
-                        role: user.role
-                    }));
-                    
-                    // จัดการ Remember Me
-                    if (rememberMe) {
-                        localStorage.setItem('rememberedUsername', username);
-                    } else {
-                        localStorage.removeItem('rememberedUsername');
-                    }
-                    
-                    // สร้างการแจ้งเตือนการเข้าสู่ระบบ
-                    await firebaseAPI.addNotification({
-                        userId: user.id,
-                        type: 'login',
-                        title: 'เข้าสู่ระบบสำเร็จ',
-                        message: `ยินดีต้อนรับ ${user.fullName || user.name}`,
-                        relatedId: null
-                    });
-                    
-                    // เปลี่ยนหน้าตาม role
-                    setTimeout(() => {
-                        if (user.role === 'driver') {
-                            window.location.href = 'driver-dashboard.html';
-                        } else if (user.role === 'admin') {
-                            window.location.href = 'admin-panel.html';
-                        } else {
-                            window.location.href = 'dashboard.html';
-                        }
-                    }, 1000);
-                } else {
-                    showError('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                showError('เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
-            } finally {
-                showLoading(false);
-            }
-        });
-
-        // แสดง/ซ่อนรหัสผ่าน
+    <script>
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const toggleIcon = document.getElementById('passwordToggleIcon');
             
-            if (passwordInput && toggleIcon) {
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    toggleIcon.textContent = 'visibility_off';
-                } else {
-                    passwordInput.type = 'password';
-                    toggleIcon.textContent = 'visibility';
-                }
-            }
-        }
-
-        // ทำให้ฟังก์ชันเป็น global เพื่อให้ HTML สามารถเรียกใช้ได้
-        window.forgotPassword = forgotPassword;
-        window.register = register;
-        window.togglePassword = togglePassword;
-
-        // แสดงข้อผิดพลาด
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            const errorText = document.getElementById('errorText');
-            
-            if (errorText) {
-                errorText.textContent = message;
-            }
-            if (errorDiv) {
-                errorDiv.classList.remove('hidden');
-            }
-            
-            // ซ่อนข้อผิดพลาดหลังจาก 5 วินาที
-            setTimeout(hideError, 5000);
-        }
-
-        // แสดงสถานะการโหลด
-        function showLoading(loading) {
-            const loginBtn = document.getElementById('loginBtn');
-            const loginBtnText = document.getElementById('loginBtnText');
-            const loginBtnLoading = document.getElementById('loginBtnLoading');
-            
-            if (loading) {
-                if (loginBtn) {
-                    loginBtn.disabled = true;
-                    loginBtn.classList.add('opacity-75', 'cursor-not-allowed');
-                }
-                if (loginBtnText) {
-                    loginBtnText.classList.add('hidden');
-                }
-                if (loginBtnLoading) {
-                    loginBtnLoading.classList.remove('hidden');
-                }
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = 'visibility_off';
             } else {
-                if (loginBtn) {
-                    loginBtn.disabled = false;
-                    loginBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                }
-                if (loginBtnText) {
-                    loginBtnText.classList.remove('hidden');
-                }
-                if (loginBtnLoading) {
-                    loginBtnLoading.classList.add('hidden');
-                }
+                passwordInput.type = 'password';
+                toggleIcon.textContent = 'visibility';
             }
         }
 
-        // ลืมรหัสผ่าน
         function forgotPassword() {
-            const usernameElement = document.getElementById('username');
-            if (!usernameElement) {
-                alert('ไม่พบช่องกรอกชื่อผู้ใช้');
-                return;
-            }
+            alert('ฟีเจอร์นี้จะพัฒนาในอนาคต');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            const username = usernameElement.value.trim();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
             
-            if (!username) {
-                alert('กรุณากรอกชื่อผู้ใช้ก่อนคลิกลืมรหัสผ่าน');
-                usernameElement.focus();
-                return;
+            if (username && password) {
+                // Simulate login process
+                alert('กำลังเข้าสู่ระบบ...');
+                // Redirect to dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
             }
-            
-            // ในระบบจริงจะส่งอีเมลรีเซ็ตรหัสผ่าน
-            alert(`ข้อมูลการรีเซ็ตรหัสผ่านสำหรับ ${username} ได้ถูกส่งไปยังอีเมลของคุณแล้ว`);
-        }
-        }
-
-        // ซ่อนข้อผิดพลาด
-        function hideError() {
-            const errorMessage = document.getElementById('errorMessage');
-            if (errorMessage) {
-                errorMessage.classList.add('hidden');
-            }
-        }
-
-        // สมัครสมาชิก
-        function register() {
-            window.location.href = 'register.html';
-        }
-
-        // ป้องกันการกด Enter ในช่องรหัสผ่าน
-        const passwordField = document.getElementById('password');
-        if (passwordField) {
-            passwordField.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    const loginFormElement = document.getElementById('loginForm');
-                    if (loginFormElement) {
-                        loginFormElement.dispatchEvent(new Event('submit'));
-                    }
-                }
-            });
-        }
-
-        // ลบข้อผิดพลาดเมื่อผู้ใช้เริ่มพิมพ์
-        const usernameField = document.getElementById('username');
-        if (usernameField) {
-            usernameField.addEventListener('input', hideError);
-        }
-        if (passwordField) {
-            passwordField.addEventListener('input', hideError);
-        }
+        });
     </script>
 </body>
 </html>
