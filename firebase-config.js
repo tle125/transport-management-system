@@ -1,13 +1,14 @@
 // Firebase Configuration
-// กรุณาใส่ Firebase config ที่ได้จาก Firebase Console
-
-// Import Firebase modules from CDN
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
 import { getFirestore, connectFirestoreEmulator } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 import { getAuth, connectAuthEmulator } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Firebase configuration object
-// ค่าจาก Firebase Console สำหรับโปรเจ็กต์ wh1-transport
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDg8DHtOW9oYZ377ZZVvKu-wpZ17hZ6S70",
   authDomain: "wh1-transport.firebaseapp.com",
@@ -20,6 +21,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 // Initialize Firestore
 const db = getFirestore(app);
@@ -34,7 +36,7 @@ const auth = getAuth(app);
 // }
 
 // Export Firebase services
-export { db, auth, app };
+export { db, auth, app, analytics };
 
 // Firebase utility functions
 export const FirebaseUtils = {
