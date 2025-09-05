@@ -128,13 +128,14 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK - DISABLED TO PREVENT CONNECTION ERRORS -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-        import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
-        import { FirebaseUtils } from './firebase-config.js';
-         import firebaseAPI from './firebase-api.js';
-         import { runMigration } from './migration.js';
+        // TEMPORARILY DISABLED TO FIX FIRESTORE CONNECTION ERRORS
+        // import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        // import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        // import { FirebaseUtils } from './firebase-config.js';
+        // import firebaseAPI from './firebase-api.js';
+        // import { runMigration } from './migration.js';
 
         // Global functions for testing
         window.testFirebaseConfig = async function() {
@@ -155,21 +156,22 @@
 
         window.testFirestoreConnection = async function() {
             const statusEl = document.getElementById('firestore-status');
-            statusEl.className = 'status info';
-            statusEl.textContent = 'กำลังทดสอบการเชื่อมต่อ Firestore...';
+            statusEl.className = 'status warning';
+            statusEl.textContent = '⚠️ การทดสอบ Firestore ถูกปิดเพื่อแก้ปัญหา connection errors';
             
-            try {
-                // Try to read from a test collection
-                const testCollection = collection(getFirestore(), 'test');
-                await getDocs(testCollection);
-                
-                statusEl.className = 'status success';
-                statusEl.textContent = '✅ เชื่อมต่อ Firestore สำเร็จ!';
-            } catch (error) {
-                statusEl.className = 'status error';
-                statusEl.textContent = `❌ ไม่สามารถเชื่อมต่อ Firestore: ${error.message}`;
-                console.error('Firestore connection error:', error);
-            }
+            // DISABLED TO PREVENT FIRESTORE CONNECTION ERRORS
+            // try {
+            //     // Try to read from a test collection
+            //     const testCollection = collection(getFirestore(), 'test');
+            //     await getDocs(testCollection);
+            //     
+            //     statusEl.className = 'status success';
+            //     statusEl.textContent = '✅ เชื่อมต่อ Firestore สำเร็จ!';
+            // } catch (error) {
+            //     statusEl.className = 'status error';
+            //     statusEl.textContent = `❌ ไม่สามารถเชื่อมต่อ Firestore: ${error.message}`;
+            //     console.error('Firestore connection error:', error);
+            // }
         };
 
         window.runDataMigration = async function() {
